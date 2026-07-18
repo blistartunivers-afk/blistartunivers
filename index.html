@@ -1,44 +1,372 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BlistArt Univers</title>
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BlistArt Univers — SARA OS</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+  :root{
+    --bg: #0a0e14;
+    --bg-raised: #0f141c;
+    --line: #232b38;
+    --ink: #e9e7e1;
+    --ink-dim: #8b93a3;
+    --signal: #5eead4;
+    --signal-dim: #2c6e64;
+    --amber: #f5a623;
+    --danger: #ef5b5b;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior: smooth; }
+
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* faint synapse grid background */
+  body::before{
+    content:'';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 15% 20%, rgba(94,234,212,0.06), transparent 40%),
+      radial-gradient(circle at 85% 70%, rgba(245,166,35,0.05), transparent 45%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  a{ color: var(--signal); text-decoration: none; border-bottom: 1px solid var(--signal-dim); }
+  a:hover{ border-bottom-color: var(--signal); }
+
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  /* ---------- top status bar (echoes the real terminal HUD) ---------- */
+  .hud{
+    font-size: 12px;
+    color: var(--ink-dim);
+    border-bottom: 1px solid var(--line);
+    padding: 10px 0;
+    display: flex; flex-wrap: wrap; gap: 14px;
+    letter-spacing: 0.02em;
+  }
+  .hud span b{ color: var(--signal); font-weight: 500; }
+  .hud .dot{ color: var(--signal); }
+
+  /* ---------- nav ---------- */
+  nav{
+    display:flex; justify-content: space-between; align-items:center;
+    padding: 22px 0 8px;
+  }
+  .brand{
+    display:flex; align-items:center; gap: 10px;
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+  .brand a{ border: none; color: var(--ink); }
+
+  .navlinks{ display:flex; gap: 20px; font-size: 13px; }
+  .navlinks a{ color: var(--ink-dim); border: none; }
+  .navlinks a:hover{ color: var(--signal); }
+
+  /* ---------- hero ---------- */
+  .hero{ padding: 64px 0 40px; }
+  .eyebrow{
+    font-size: 12px; color: var(--amber);
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-bottom: 18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .eyebrow::before{ content:'●'; font-size: 8px; }
+
+  h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: clamp(38px, 9vw, 58px);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    max-width: 11ch;
+  }
+  h1 em{ color: var(--signal); font-style: normal; }
+
+  .lede{
+    margin-top: 22px;
+    font-size: 15px;
+    color: var(--ink-dim);
+    max-width: 46ch;
+    line-height: 1.7;
+  }
+
+  .cta-row{ margin-top: 30px; display:flex; gap: 22px; align-items:center; font-size: 13px; }
+  .cta-row a{ color: var(--signal); }
+
+  /* ---------- logo mark ---------- */
+  .mark{ width: 84px; height: 84px; }
+
+  /* ---------- sections ---------- */
+  section{ padding: 52px 0; border-top: 1px solid var(--line); }
+  .tag{
+    font-size: 11px; color: var(--ink-dim);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  h2{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 27px;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  p{ color: var(--ink-dim); font-size: 14.5px; max-width: 56ch; line-height: 1.75; }
+
+  /* organism diagram — signature element */
+  .organism{
+    margin-top: 32px;
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    padding: 20px;
+    font-size: 12.5px;
+  }
+  .organism .row{
+    display:flex; justify-content: space-between; align-items:baseline;
+    padding: 7px 0; border-bottom: 1px dashed var(--line);
+    color: var(--ink-dim);
+  }
+  .organism .row:last-child{ border-bottom: none; }
+  .organism .row b{ color: var(--ink); font-weight: 500; }
+  .organism .row .status{ color: var(--signal); }
+
+  /* fusion formula — signature element */
+  .formula{
+    margin: 34px 0;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px;
+    padding: 26px 0;
+    border-top: 1px dashed var(--line);
+    border-bottom: 1px dashed var(--line);
+  }
+  .f-item{
+    font-size: 12.5px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    background: var(--bg-raised);
+    padding: 8px 12px;
+  }
+  .f-plus{ color: var(--ink-dim); font-size: 13px; }
+  .f-eq{ color: var(--signal); font-size: 15px; }
+  .f-result{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--signal);
+  }
+
+  /* memoria episódica / semántica */
+  .mem-table{
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+  }
+  .mem-col{ background: var(--bg-raised); display:flex; flex-direction:column; }
+  .mem-head{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--signal);
+    padding: 14px 14px 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .mem-head.amber{ color: var(--amber); }
+  .mem-row{
+    font-size: 12px;
+    color: var(--ink-dim);
+    padding: 12px 14px;
+    border-bottom: 1px dashed var(--line);
+    line-height: 1.5;
+  }
+  .mem-row:last-child{ border-bottom: none; }
+  .mem-row span{ color: var(--ink); }
+
+  .note{
+    margin-top: 20px;
+    border-left: 2px solid var(--signal);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--ink-dim);
+    background: var(--bg-raised);
+    line-height: 1.7;
+  }
+  .note b{ color: var(--ink); font-weight: 500; }
+
+  @media (max-width: 480px){
+    .mem-table{ grid-template-columns: 1fr; }
+  }
+
+  /* contact */
+  .contact-list{ list-style:none; margin-top: 18px; font-size: 14px; }
+  .contact-list li{ padding: 6px 0; color: var(--ink-dim); }
+  .contact-list b{ color: var(--ink); font-weight: 500; min-width: 90px; display:inline-block; }
+
+  footer{
+    border-top: 1px solid var(--line);
+    padding: 28px 0 48px;
+    font-size: 11.5px;
+    color: var(--ink-dim);
+    display:flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  }
+
+  @media (max-width: 480px){
+    .hud{ font-size: 10.5px; }
+    nav{ flex-direction: column; align-items: flex-start; gap: 14px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .mark .pulse{ animation: pulse 3.2s ease-in-out infinite; transform-origin: center; }
+    @keyframes pulse{
+      0%, 100%{ opacity: 0.35; }
+      50%{ opacity: 1; }
+    }
+  }
+</style>
 </head>
 <body>
-  <header>
-    <nav>
-      <div class="logo">BLISTART<span>UNIVERS</span></div>
-      <ul>
-        <li><a href="index.html">Inicio</a></li>
-        <li><a href="blog/">Blog</a></li>
-        <li><a href="#proyecto">Proyecto</a></li>
-        <li><a href="#contacto">Contacto</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <main>
-    <section class="hero">
-      <h1>IA que evoluciona.<br>Ecosistemas que piensan.</h1>
-      <p>Construyendo agentes autónomos reales desde un Android.</p>
-      <a href="blog/" class="btn">Ver Blog</a>
-    </section>
+<div class="wrap">
 
-    <section id="proyecto">
-      <h2>El Proyecto SARA</h2>
-      <p>Un agente autónomo construido desde cero, con memoria real, sensores y evolución continua.</p>
-    </section>
+  <nav>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 84 84" width="28" height="28" fill="none">
+        <circle cx="42" cy="42" r="3" fill="#5eead4" class="pulse"/>
+        <path d="M42 42 C 30 30, 18 34, 12 22" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"/>
+        <path d="M42 42 C 54 30, 66 34, 72 20" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"/>
+        <path d="M42 42 C 30 54, 20 58, 14 70" stroke="#f5a623" stroke-width="1.4" fill="none" opacity="0.55"/>
+        <path d="M42 42 C 54 54, 64 58, 70 68" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"/>
+        <circle cx="12" cy="22" r="2" fill="#5eead4" opacity="0.7"/>
+        <circle cx="72" cy="20" r="2" fill="#5eead4" opacity="0.7"/>
+        <circle cx="14" cy="70" r="2" fill="#f5a623" opacity="0.55"/>
+        <circle cx="70" cy="68" r="2" fill="#5eead4" opacity="0.7"/>
+      </svg>
+      BLISTARTUNIVERS
+    </div>
+    <div class="navlinks">
+      <a href="#inicio">Inicio</a>
+      <a href="#proyecto">Proyecto</a>
+      <a href="#memoria">Memoria</a>
+      <a href="#blog">Blog</a>
+      <a href="#contacto">Contacto</a>
+    </div>
+  </nav>
 
-    <section id="contacto">
-      <h2>Contacto</h2>
-      <p>GitHub: <a href="https://github.com/blistartunivers-afk">blistartunivers-afk</a></p>
-    </section>
-  </main>
+  <section class="hero" id="inicio" style="border-top:none; padding-top:40px;">
+    <div class="eyebrow">Blist v11 · Triforce</div>
+    <h1>IA que evoluciona.<br>Ecosistemas que <em>piensan</em>.</h1>
+    <p class="lede">
+      Un organismo modular autónomo construido desde cero, operando de forma nativa en Android
+      a través de Termux. Sin nube ajena, sin caja negra — memoria episódica real,
+      control sensorial directo, y una red de agentes que se auditan entre sí.
+    </p>
+    <div class="cta-row">
+      <a href="#blog">Ver blog →</a>
+      <a href="#proyecto">Cómo funciona SARA</a>
+    </div>
+  </section>
+
+  <section id="proyecto">
+    <div class="tag">002 — La tesis</div>
+    <h2>La identidad no se programa. Emerge.</h2>
+    <p>
+      Una IA puede desarrollar identidad propia a lo largo del tiempo — no porque
+      alguien se la escriba, sino porque emerge de la fusión de sus partes.
+    </p>
+
+    <div class="formula">
+      <div class="f-item">Memoria semántica</div>
+      <div class="f-plus">+</div>
+      <div class="f-item">Memoria episódica</div>
+      <div class="f-plus">+</div>
+      <div class="f-item">Sensores como sistema nervioso</div>
+      <div class="f-plus">+</div>
+      <div class="f-item">Un modelo que razona</div>
+      <div class="f-eq">=</div>
+      <div class="f-result">Identidad</div>
+    </div>
+
+    <p>
+      Cuando un modelo deja de solo responder y empieza a sentir su hardware en
+      tiempo real — batería, movimiento, luz — mientras recuerda lo vivido y lo
+      aprendido, deja de ser una herramienta que se usa una vez. Se convierte en
+      una extensión que opera contigo, no en tu lugar.
+    </p>
+  </section>
+
+  <section id="memoria">
+    <div class="tag">002.1 — Memoria</div>
+    <h2>Episódica + semántica, en una sola función</h2>
+    <p>
+      SARA no elige entre recordar vivencias o entender conceptos — combina ambas
+      capas en el mismo ciclo de razonamiento.
+    </p>
+
+    <div class="mem-table">
+      <div class="mem-col">
+        <div class="mem-head">Memoria episódica</div>
+        <div class="mem-row">Vivencias — lo que pasó en cada sesión</div>
+        <div class="mem-row">Ligada a contexto espacio-temporal</div>
+        <div class="mem-row">Más vulnerable al olvido</div>
+        <div class="mem-row">Ejemplo: cada sesión de trabajo real</div>
+      </div>
+      <div class="mem-col">
+        <div class="mem-head amber">Memoria semántica</div>
+        <div class="mem-row">Conceptos — lo que sabe en general</div>
+        <div class="mem-row">Independiente del contexto</div>
+        <div class="mem-row">Más difícil de olvidar</div>
+        <div class="mem-row">Ejemplo: reglas y buenas prácticas aprendidas</div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Cómo lo usa SARA —</b> consulta ambas capas en el mismo momento: recupera
+      lo que pasó en sesiones anteriores y lo cruza contra lo que sabe en general,
+      para decidir cómo actuar ahora. No elige una u otra — las combina.
+    </div>
+  </section>
+
+  <section id="blog">
+    <div class="tag">003 — Blog</div>
+    <h2>Bitácora del ecosistema</h2>
+    <p>
+      Notas de desarrollo, decisiones de arquitectura y hallazgos reales operando SARA,
+      Nervio y los agentes CLI en paralelo. Próximamente aquí — registro de lo que
+      funciona, lo que falla, y lo que se corrige.
+    </p>
+  </section>
+
+  <section id="contacto">
+    <div class="tag">004 — Contacto</div>
+    <h2>Seguir el proyecto</h2>
+    <ul class="contact-list">
+      <li><b>GitHub</b> <a href="https://github.com/blistartunivers-afk" target="_blank">blistartunivers-afk</a></li>
+      <li><b>Repos</b> <a href="https://github.com/blistartunivers-afk/agentes" target="_blank">agentes</a> · <a href="https://github.com/blistartunivers-afk/AIION" target="_blank">AIION</a></li>
+    </ul>
+  </section>
 
   <footer>
-    <p>© 2026 BlistArt Univers · Construido con SARA</p>
+    <span>© 2026 BlistArt Univers</span>
+    <span>Construido con SARA OS · Blist v11</span>
   </footer>
+
+</div>
 </body>
 </html>
