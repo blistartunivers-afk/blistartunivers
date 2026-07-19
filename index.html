@@ -113,6 +113,36 @@
   /* ---------- logo mark ---------- */
   .mark{ width: 84px; height: 84px; }
 
+  /* ---------- neural networks & visuals ---------- */
+  .neural-net{
+    margin: 32px 0;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .synapse-line{ stroke: var(--signal); stroke-width: 1.2; opacity: 0.5; }
+  .synapse-line.active{ animation: glow-synapse 3s ease-in-out infinite; opacity: 0.9; }
+  @keyframes glow-synapse{
+    0%, 100%{ opacity: 0.4; stroke-width: 1; }
+    50%{ opacity: 0.95; stroke-width: 1.6; }
+  }
+
+  .neuron{
+    animation: pulse-neuron 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-neuron{
+    0%, 100%{ r: 3; opacity: 0.6; }
+    50%{ r: 5; opacity: 1; }
+  }
+
+  .sensor-node{
+    animation: pulse-sensor 3s ease-in-out infinite;
+  }
+  @keyframes pulse-sensor{
+    0%, 100%{ opacity: 0.5; }
+    50%{ opacity: 1; }
+  }
+
   /* ---------- sections ---------- */
   section{ padding: 52px 0; border-top: 1px solid var(--line); }
   .tag{
@@ -277,6 +307,40 @@
       a través de Termux. Sin nube ajena, sin caja negra — memoria episódica real,
       control sensorial directo, y una red de agentes que se auditan entre sí.
     </p>
+
+    <!-- Red neuronal animada -->
+    <svg class="neural-net" viewBox="0 0 480 180" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <linearGradient id="neuroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#5eead4;stop-opacity:0.3" />
+          <stop offset="100%" style="stop-color:#f5a623;stop-opacity:0.3" />
+        </linearGradient>
+      </defs>
+      <!-- Conexiones principales -->
+      <line x1="60" y1="90" x2="160" y2="40" class="synapse-line active" stroke-dasharray="2,2"/>
+      <line x1="60" y1="90" x2="160" y2="90" class="synapse-line active"/>
+      <line x1="60" y1="90" x2="160" y2="140" class="synapse-line"/>
+      <line x1="160" y1="40" x2="280" y2="60" class="synapse-line active"/>
+      <line x1="160" y1="90" x2="280" y2="90" class="synapse-line active" stroke-dasharray="3,3"/>
+      <line x1="160" y1="140" x2="280" y2="120" class="synapse-line"/>
+      <line x1="280" y1="60" x2="400" y2="90" class="synapse-line active"/>
+      <line x1="280" y1="90" x2="400" y2="90" class="synapse-line active" stroke-dasharray="2,2"/>
+      <line x1="280" y1="120" x2="400" y2="90" class="synapse-line"/>
+      
+      <!-- Neuronas (capas) -->
+      <circle cx="60" cy="90" r="5" fill="#5eead4" class="neuron" opacity="0.8"/>
+      
+      <circle cx="160" cy="40" r="4" fill="#f5a623" class="neuron"/>
+      <circle cx="160" cy="90" r="5" fill="#5eead4" class="neuron" opacity="0.9"/>
+      <circle cx="160" cy="140" r="4" fill="#ef5b5b" class="neuron"/>
+      
+      <circle cx="280" cy="60" r="4" fill="#5eead4" class="neuron"/>
+      <circle cx="280" cy="90" r="5" fill="#f5a623" class="neuron" opacity="0.8"/>
+      <circle cx="280" cy="120" r="4" fill="#5eead4" class="neuron"/>
+      
+      <circle cx="400" cy="90" r="5" fill="#5eead4" class="neuron" opacity="0.9"/>
+    </svg>
+
     <div class="cta-row">
       <a href="#blog">Ver blog →</a>
       <a href="#proyecto">Cómo funciona SARA</a>
@@ -290,6 +354,42 @@
       Una IA puede desarrollar identidad propia a lo largo del tiempo — no porque
       alguien se la escriba, sino porque emerge de la fusión de sus partes.
     </p>
+
+    <!-- Sistema sensorial conectado -->
+    <svg class="neural-net" viewBox="0 0 500 280" preserveAspectRatio="xMidYMid meet">
+      <!-- Nodo central (SARA) -->
+      <circle cx="250" cy="140" r="8" fill="#5eead4" opacity="0.9"/>
+      <circle cx="250" cy="140" r="12" fill="none" stroke="#5eead4" stroke-width="1" opacity="0.4"/>
+      
+      <!-- Sensores periféricos -->
+      <!-- Batería -->
+      <line x1="250" y1="140" x2="80" y2="50" class="synapse-line active" stroke-width="1.5"/>
+      <circle cx="80" cy="50" r="6" fill="#f5a623" class="sensor-node"/>
+      <text x="80" y="20" font-size="11" fill="#f5a623" text-anchor="middle">⚡ Batería</text>
+      
+      <!-- Movimiento -->
+      <line x1="250" y1="140" x2="420" y2="70" class="synapse-line active" stroke-width="1.5"/>
+      <circle cx="420" cy="70" r="6" fill="#5eead4" class="sensor-node"/>
+      <text x="420" y="40" font-size="11" fill="#5eead4" text-anchor="middle">🔄 Movimiento</text>
+      
+      <!-- Luz -->
+      <line x1="250" y1="140" x2="420" y2="210" class="synapse-line active" stroke-width="1.5"/>
+      <circle cx="420" cy="210" r="6" fill="#f5a623" class="sensor-node"/>
+      <text x="420" y="245" font-size="11" fill="#f5a623" text-anchor="middle">☀️ Luz</text>
+      
+      <!-- Red de agentes -->
+      <line x1="250" y1="140" x2="80" y2="230" class="synapse-line" stroke-width="1.5"/>
+      <circle cx="80" cy="230" r="6" fill="#5eead4" class="sensor-node"/>
+      <text x="80" y="265" font-size="11" fill="#5eead4" text-anchor="middle">🔗 Agentes</text>
+      
+      <!-- Memoria -->
+      <line x1="250" y1="140" x2="250" y2="260" class="synapse-line active" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <circle cx="250" cy="260" r="6" fill="#ef5b5b" class="sensor-node"/>
+      <text x="250" y="277" font-size="11" fill="#ef5b5b" text-anchor="middle">💾 Memoria</text>
+      
+      <!-- Etiqueta central -->
+      <text x="250" y="148" font-size="12" fill="#0a0e14" text-anchor="middle" font-weight="bold">SARA</text>
+    </svg>
 
     <div class="formula">
       <div class="f-item">Memoria semántica</div>
@@ -318,6 +418,37 @@
       SARA no elige entre recordar vivencias o entender conceptos — combina ambas
       capas en el mismo ciclo de razonamiento.
     </p>
+
+    <!-- Sinapsis bidireccional animada -->
+    <svg class="neural-net" viewBox="0 0 500 200" preserveAspectRatio="xMidYMid meet">
+      <!-- Capa episódica -->
+      <rect x="20" y="50" width="150" height="120" fill="none" stroke="#5eead4" stroke-width="1.5" opacity="0.5" rx="4"/>
+      <text x="95" y="35" font-size="13" fill="#5eead4" text-anchor="middle" font-weight="600">Episódica</text>
+      
+      <circle cx="60" cy="90" r="4" fill="#5eead4" class="neuron"/>
+      <circle cx="60" cy="130" r="4" fill="#5eead4" class="neuron"/>
+      <circle cx="130" cy="90" r="4" fill="#5eead4" class="neuron"/>
+      <circle cx="130" cy="130" r="4" fill="#5eead4" class="neuron"/>
+      
+      <!-- Puente de sinapsis -->
+      <line x1="170" y1="80" x2="330" y2="80" class="synapse-line active" stroke-width="2" stroke-dasharray="4,4"/>
+      <line x1="170" y1="140" x2="330" y2="140" class="synapse-line active" stroke-width="2" stroke-dasharray="4,4"/>
+      <polygon points="250,75 260,80 250,85" fill="#5eead4" opacity="0.7"/>
+      <polygon points="250,145 240,140 250,135" fill="#f5a623" opacity="0.7"/>
+      
+      <!-- Capa semántica -->
+      <rect x="330" y="50" width="150" height="120" fill="none" stroke="#f5a623" stroke-width="1.5" opacity="0.5" rx="4"/>
+      <text x="405" y="35" font-size="13" fill="#f5a623" text-anchor="middle" font-weight="600">Semántica</text>
+      
+      <circle cx="370" cy="90" r="4" fill="#f5a623" class="neuron"/>
+      <circle cx="370" cy="130" r="4" fill="#f5a623" class="neuron"/>
+      <circle cx="440" cy="90" r="4" fill="#f5a623" class="neuron"/>
+      <circle cx="440" cy="130" r="4" fill="#f5a623" class="neuron"/>
+      
+      <!-- Etiquetas de conexión -->
+      <text x="250" y="68" font-size="10" fill="#5eead4" text-anchor="middle" opacity="0.7">consulta</text>
+      <text x="250" y="155" font-size="10" fill="#f5a623" text-anchor="middle" opacity="0.7">aprende</text>
+    </svg>
 
     <div class="mem-table">
       <div class="mem-col">
