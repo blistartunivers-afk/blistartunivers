@@ -1,0 +1,16 @@
+{
+  "name": "blistartunivers",
+  "version": "11.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve -s . -l 8080",
+    "build": "cp index.html dist/index.html && cp -r assets dist/ 2>/dev/null || true",
+    "preview": "npx serve -s dist -l 8080",
+    "lighthouse": "lhci autorun"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "@lhci/cli": "^0.13.0"
+  }
+}
