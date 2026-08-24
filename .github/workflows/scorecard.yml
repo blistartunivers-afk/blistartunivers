@@ -1,0 +1,55 @@
+# OpenSSF Scorecard - Security posture analysis
+# Runs weekly and on PR changes to .github/workflows
+name: "Scorecard"
+on:
+  schedule:
+    - cron: '0 4 * * 1'  # Weekly Monday 04:00 UTC
+  push:
+    branches: [main, master]
+    paths:
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+permissions:
+  contents: read
+  security-events: write
+  id-token: write
+jobs:
+  scorecard:
+    name: Scorecard
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Run Scorecard"
+        uses: ossf/scorecard-action@v2.3.1
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: "Upload SARIF results to GitHub Security tab"
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: scorecard
+
+      - name: "Fail on critical findings"
+        if: always()
+        run: |
+          if [ -f results.sarif ]; then
+            CRITICAL=$(jq '.runs[0].results[] | select(.level == "error") | length' results.sarif 2>/dev/null || echo 0)
+            if [ "$CRITICAL" -gt 0 ]; then
+              echo "::error::Scorecard found $CRITICAL critical findings"
+              exit 1
+            fi
+          fi

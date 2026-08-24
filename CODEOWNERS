@@ -1,0 +1,49 @@
+# CODEOWNERS — BLIST Ecosystem
+# These users/teams are automatically requested for review on matching files
+#
+# Order matters: last match wins
+#
+# Syntax: <pattern>  @user1 @user2
+
+# Global — all files require estiven approval
+*  @estiven
+
+# Security-critical files — require additional review
+.github/workflows/  @estiven
+.github/dependabot.yml  @estiven
+SECURITY.md  @estiven
+CODEOWNERS  @estiven
+
+# Configuration files
+package.json  @estiven
+package-lock.json  @estiven
+lighthouse-budget.json  @estiven
+
+# Core system files
+blistv11.py  @estiven
+blist_dag.py  @estiven
+
+# Documentation
+docs/  @estiven
+README.md  @estiven
+
+# Scripts and automation
+scripts/  @estiven
+*.sh  @estiven
+
+# Infrastructure
+Dockerfile*  @estiven
+docker-compose*.yml  @estiven
+.kubernetes/  @estiven
+terraform/  @estiven
+
+# Secrets and keys (should not exist in repo, but if they do)
+*.pem  @estiven
+*.key  @estiven
+*.gpg  @estiven
+.env*  @estiven
+
+# Mobile / Android specific
+*.apk  @estiven
+*.aab  @estiven
+android/  @estiven

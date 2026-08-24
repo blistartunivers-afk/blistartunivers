@@ -1,0 +1,77 @@
+# Dependabot configuration for BLIST ecosystem
+# Auto-updates for npm, GitHub Actions, and Docker
+version: 2
+updates:
+  # npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:00"
+      timezone: "America/Bogota"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "estiven"
+    assignees:
+      - "estiven"
+    labels:
+      - "dependencies"
+      - "npm"
+      - "automated"
+    commit-message:
+      prefix: "deps(npm)"
+      include: "scope"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "*"
+        dependency-type: "development"
+      production-dependencies:
+        patterns:
+          - "*"
+        dependency-type: "production"
+    ignore:
+      # Ignore major version updates for critical deps (manual review)
+      - dependency-name: "*"
+        update-type: "version-update:semver-major"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "03:30"
+      timezone: "America/Bogota"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "estiven"
+    assignees:
+      - "estiven"
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+    commit-message:
+      prefix: "deps(actions)"
+      include: "scope"
+
+  # Docker (if applicable)
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "03:00"
+      timezone: "America/Bogota"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "estiven"
+    labels:
+      - "dependencies"
+      - "docker"
+      - "automated"
+    commit-message:
+      prefix: "deps(docker)"
+      include: "scope"

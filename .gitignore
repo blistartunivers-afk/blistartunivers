@@ -1,0 +1,8 @@
+# Security
+*.pem
+*.key
+*.gpg
+.env*
+*.secret
+secrets/
+

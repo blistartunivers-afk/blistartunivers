@@ -1,0 +1,48 @@
+# SLSA (Supply-chain Levels for Software Artifacts) verification
+# Generates provenance for releases
+name: "SLSA Provenance"
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+jobs:
+  build:
+    name: Build and generate provenance
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    with:
+      # Base64-encoded build script
+      build_script: |
+        echo "Building BLIST project..."
+        # Add your build steps here
+        # npm ci && npm run build
+      # Artifacts to upload
+      artifacts: dist/**
+    secrets:
+      # Required for provenance signing
+      registry-username: ${{ secrets.REGISTRY_USERNAME }}
+      registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+
+  verify:
+    name: Verify provenance
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      attestations: read
+    steps:
+      - name: "Download provenance"
+        uses: actions/download-artifact@v4
+        with:
+          name: provenance
+          path: provenance
+
+      - name: "Verify with slsa-verifier"
+        uses: slsa-framework/slsa-verifier/action@v2.3.0
+        with:
+          provenance: provenance/*.intoto.jsonl
+          source-uri: github.com/blistartunivers-afk/${{ github.event.repository.name }}

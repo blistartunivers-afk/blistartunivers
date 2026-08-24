@@ -1,0 +1,43 @@
+# Pin GitHub Actions to immutable SHAs
+# Prevents supply chain attacks via mutable tags
+name: "Pin Actions"
+on:
+  schedule:
+    - cron: '0 5 * * 1'  # Weekly Monday 05:00 UTC
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+permissions:
+  contents: read
+jobs:
+  pin-actions:
+    name: Pin Actions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: "Pin GitHub Actions"
+        uses: suzuki-shunsuke/pin-github-action@v1
+        with:
+          # Only pin actions in .github/workflows
+          target: .github/workflows
+          # Create PR with changes
+          create_pr: true
+          pr_title: "chore: pin GitHub Actions to SHAs"
+          pr_body: |
+            This PR pins all GitHub Actions to their immutable SHA commits.
+            
+            **Why?**
+            - Prevents supply chain attacks via tag mutation
+            - Ensures reproducible builds
+            - Follows SLSA Build Level 2+ requirements
+          labels: "dependencies,github-actions,security,automated"
+          reviewers: estiven
+          assignees: estiven
