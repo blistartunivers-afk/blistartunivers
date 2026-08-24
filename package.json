@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npx serve -s . -l 8080",
-    "build": "cp index.html dist/index.html && cp -r assets dist/ 2>/dev/null || true",
+    "build": "mkdir -p dist && cp index.html dist/index.html && cp -r assets dist/ 2>/dev/null || true",
     "preview": "npx serve -s dist -l 8080",
     "lighthouse": "lhci autorun"
   },
