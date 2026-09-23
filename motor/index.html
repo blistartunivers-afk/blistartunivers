@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motor de Imaginación</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1310; --panel:#171d15; --border:#2b3225;
+    --chalk:#EDEAE0; --chalkDim:#8f9584;
+    --cyan:#7FD8C9; --amber:#E8A857;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--bg); color:var(--chalk);
+    font-family:'Fraunces', ui-serif, Georgia, serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mono{ font-family: ui-monospace, 'SF Mono', Menlo, monospace; }
+  .sans{ font-family: ui-sans-serif, system-ui; }
+  .wrap{ max-width:440px; margin:0 auto; padding:28px 20px 44px; }
+  .eyebrow{ font-size:11px; letter-spacing:.12em; color:var(--chalkDim); text-transform:uppercase; }
+  h1{ font-size:30px; font-weight:600; margin:6px 0 8px; line-height:1.1;
+      background:linear-gradient(100deg,#EDEAE0 30%,#9fe3c8 60%,#e0b48a 90%);
+      -webkit-background-clip:text; background-clip:text; color:transparent; }
+  p.lead{ color:var(--chalkDim); font-size:14px; line-height:1.55; margin:0 0 4px; }
+  .eq{ color:var(--cyan); font-size:10.5px; margin:10px 0 20px; opacity:.9; line-height:1.65; }
+  .eq span{ opacity:.65; }
+  .panel{ background:var(--panel); border:1px solid var(--border); border-radius:18px; padding:16px;
+           position:relative; overflow:hidden; }
+  .panel::before{
+    content:''; position:absolute; inset:-40%; z-index:0; opacity:.16; filter:blur(60px);
+    background:conic-gradient(from 0deg, #7FD8C9, #C98BDE, #E8A857, #7ED0FF, #E87A94, #B7E88A, #7FD8C9);
+    animation: swirl 26s linear infinite;
+  }
+  @keyframes swirl{ to{ transform:rotate(360deg); } }
+  .panel > *{ position:relative; z-index:1; }
+  .canvasBox{ display:flex; justify-content:center; margin-bottom:14px; position:relative; }
+  .aura{
+    position:absolute; width:280px; height:280px; border-radius:50%; filter:blur(34px); opacity:.55;
+    background:conic-gradient(from 0deg, var(--a0), var(--a1), var(--a2), var(--a3), var(--a4), var(--a5), var(--a0));
+    animation: swirl 18s linear infinite; transition: opacity 400ms;
+  }
+  canvas{ width:100%; max-width:340px; aspect-ratio:1/1; image-rendering:auto; border-radius:14px;
+          border:1px solid var(--border); transition: box-shadow 400ms; position:relative; }
+  .statusRow{ display:flex; align-items:center; justify-content:space-between; font-size:12px; margin-bottom:16px; gap:8px; }
+  .regime{ transition: color 300ms; white-space:nowrap; }
+  .bars{ display:flex; flex-direction:column; gap:6px; margin-bottom:18px; }
+  .barRow{ display:flex; align-items:center; gap:8px; font-size:12px; }
+  .dot{ width:8px; height:8px; border-radius:50%; flex:none; box-shadow:0 0 6px 0 currentColor; }
+  .barName{ width:80px; color:var(--chalkDim); }
+  .barName.top{ color:var(--chalk); }
+  .barTrack{ flex:1; height:5px; background:var(--border); border-radius:3px; overflow:hidden; }
+  .barFill{ height:100%; transition: width 120ms linear, background 200ms; background:var(--chalkDim); }
+  .barPct{ width:34px; text-align:right; color:var(--chalkDim); }
+  .sliderBlock{ margin-bottom:12px; }
+  .sliderLabel{ display:flex; justify-content:space-between; font-size:11px; color:var(--chalkDim); margin-bottom:4px; }
+  input[type=range]{ -webkit-appearance:none; appearance:none; width:100%; height:2px; background:var(--border); border-radius:2px; }
+  input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; width:14px; height:14px; border-radius:50%; background:var(--chalk); cursor:pointer; border:2px solid var(--bg); }
+  input[type=range]::-moz-range-thumb{ width:14px; height:14px; border-radius:50%; background:var(--chalk); cursor:pointer; border:2px solid var(--bg); }
+  .btnRow{ display:flex; gap:8px; margin-top:6px; }
+  button{ flex:1; display:flex; align-items:center; justify-content:center; gap:6px; border-radius:10px; padding:10px 0; font-size:12px; cursor:pointer; border:1px solid var(--border); background:transparent; color:var(--chalk); font-family: ui-monospace, monospace;}
+  button.primary{ background:var(--chalk); color:var(--bg); border:none; }
+  button.amber{ color:var(--amber); }
+  .foot{ color:var(--chalkDim); font-size:12.5px; line-height:1.55; margin-top:16px; }
+  .foot b{ color:var(--chalk); font-weight:600; }
+  .persistNote{ color:var(--chalkDim); font-size:11px; line-height:1.5; margin-top:10px; opacity:.75; }
+  .seedRow{ color:var(--chalkDim); font-size:10.5px; margin-top:6px; opacity:.65; word-break:break-all; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow mono">CPPN de pesos aleatorios · aproximador universal + memoria densa</div>
+  <h1>Motor de Imaginación</h1>
+  <p class="lead sans">Las 6 memorias ya no son 6 fórmulas escritas a mano: son 6 redes neuronales pequeñas (CPPN) con pesos aleatorios, no entrenadas. Por el teorema de aproximación universal, cada una puede representar <b>cualquier</b> función continua del plano — un espacio infinito de imágenes nunca antes vistas, ni por vos ni por ningún dataset. El campo de 1024 unidades sigue relajándose sobre ellas con Langevin + difusión lateral, como una partícula browniana con memoria cortical.</p>
+  <div class="eq mono">
+    fₖ(x,y,r) = tanh(W₄·φ(W₃·φ(W₂·φ(W₁·[x,y,r,1]))))<span> · φᵢ ∈ {sin,cos,tanh,gauss,softsign} al azar por neurona</span><br>
+    x ← x + <span>D·∇²x·dt</span> + Σₖ softmax(β⟨fₖ,x⟩)·fₖ·dt + √(2T·dt)·ξ
+  </div>
+
+  <div class="panel">
+    <div class="canvasBox">
+      <div class="aura" id="aura"></div>
+      <canvas id="cv" width="32" height="32"></canvas>
+    </div>
+
+    <div class="statusRow mono">
+      <span id="regime" class="regime">● —</span>
+      <span id="iter" style="color:var(--chalkDim)">t = 0</span>
+      <svg width="90" height="26" style="overflow:visible">
+        <path id="spark" fill="none" stroke="var(--amber)" stroke-width="1.4" />
+      </svg>
+    </div>
+
+    <div class="bars" id="bars"></div>
+
+    <div class="sliderBlock">
+      <div class="sliderLabel mono"><span>β · temperatura inversa</span><span id="betaVal">12.0</span></div>
+      <input type="range" id="beta" min="1" max="40" step="0.5" value="12">
+    </div>
+
+    <div class="sliderBlock">
+      <div class="sliderLabel mono"><span>T · ruido térmico (Langevin)</span><span id="noiseVal">0.006</span></div>
+      <input type="range" id="noise" min="0" max="0.05" step="0.001" value="0.006">
+    </div>
+
+    <div class="sliderBlock" style="margin-bottom:18px;">
+      <div class="sliderLabel mono"><span>D · difusión lateral (corteza)</span><span id="diffVal">0.12</span></div>
+      <input type="range" id="diff" min="0" max="0.6" step="0.01" value="0.12">
+    </div>
+
+    <div class="btnRow">
+      <button id="playBtn" class="primary">⏸ Pausar</button>
+      <button id="reseedBtn">⟳ Nuevo sueño</button>
+      <button id="wakeBtn" class="amber">☀ Despertar</button>
+    </div>
+    <div class="seedRow mono" id="seedRow"></div>
+  </div>
+
+  <p class="foot sans">El <b>tono</b> de cada píxel codifica <b>qué memoria</b> domina ahí (correlación local rectificada, como un mapa de dominancia cortical); el <b>brillo</b> codifica <b>cuánta</b> activación hay. Los 6 tonos están espaciados por el <b>ángulo dorado</b> (137.5°, phyllotaxis). La difusión lateral D imita un modelo de Wilson-Cowan: la activación se esparce entre vecinos antes de decidirse por un atractor. Cada "Nuevo sueño" tira 6 semillas nuevas y reconstruye las 6 redes desde cero — nunca es la misma imagen dos veces. Con β alto, T→0 y D→0: recuerdo nítido y monocromático de una de las 6 formas inéditas. Con T y D altos: mosaico multicolor en movimiento — alucinación entre formas que ninguna existía antes de este sueño.</p>
+
+  <p class="persistNote mono" id="persistNote">estado no guardado aún</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  const GRID = 32, DIM = GRID*GRID, DT = 0.15, K = 6;
+  const STORAGE_KEY = 'motor_imaginacion_v3';
+  const GREEK = ['α','β','γ','δ','ε','ζ'];
+
+  function gaussianRandom(){
+    let u=0,v=0;
+    while(u===0) u=Math.random();
+    while(v===0) v=Math.random();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+  }
+
+  // ---- PRNG determinista (mulberry32): una semilla entera reconstruye la red exacta ----
+  function mulberry32(seed){
+    let a = seed >>> 0;
+    return function(){
+      a = (a + 0x6D2B79F5) | 0;
+      let t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function seededGaussian(rng){
+    let u=0,v=0;
+    while(u===0) u=rng();
+    while(v===0) v=rng();
+    return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);
+  }
+
+  // ---- CPPN: aproximador universal con pesos aleatorios, no entrenados ----
+  const LAYER_SIZES = [4, 14, 14, 10, 1];
+  const ACT_POOL = [Math.sin, Math.cos, Math.tanh, x=>Math.exp(-x*x), x=>x/(1+Math.abs(x))];
+
+  function buildCPPN(seed){
+    const rng = mulberry32(seed);
+    const layers = [];
+    for(let L=0; L<LAYER_SIZES.length-1; L++){
+      const inSz=LAYER_SIZES[L], outSz=LAYER_SIZES[L+1];
+      const W = new Float32Array(inSz*outSz);
+      const scale = (L===0 ? 2.4 : 1.5) / Math.sqrt(inSz);
+      for(let j=0;j<W.length;j++) W[j] = seededGaussian(rng)*scale;
+      const acts = new Array(outSz);
+      for(let o=0;o<outSz;o++) acts[o] = ACT_POOL[Math.floor(rng()*ACT_POOL.length)];
+      layers.push({inSz,outSz,W,acts});
+    }
+    return layers;
+  }
+
+  function evalCPPN(layers, inputs){
+    let vec = inputs;
+    for(let L=0; L<layers.length; L++){
+      const {inSz,outSz,W,acts} = layers[L];
+      const out = new Float32Array(outSz);
+      const isLast = L===layers.length-1;
+      for(let o=0;o<outSz;o++){
+        let s=0;
+        for(let i=0;i<inSz;i++) s += W[o*inSz+i]*vec[i];
+        out[o] = isLast ? Math.tanh(s) : acts[o](s);
+      }
+      vec = out;
+    }
+    return vec[0];
+  }
+
+  function makePatternFromSeed(seed){
+    const net = buildCPPN(seed);
+    const arr = new Float32Array(DIM);
+    const inp = new Float32Array(4);
+    for(let iy=0; iy<GRID; iy++){
+      for(let ix=0; ix<GRID; ix++){
+        const x = (ix/(GRID-1))*2-1;
+        const y = (iy/(GRID-1))*2-1;
+        const r = Math.sqrt(x*x+y*y);
+        inp[0]=x; inp[1]=y; inp[2]=r; inp[3]=1;
+        arr[iy*GRID+ix] = evalCPPN(net, inp);
+      }
+    }
+    let norm=0;
+    for(let i=0;i<DIM;i++) norm += arr[i]*arr[i];
+    norm = Math.sqrt(norm)||1;
+    for(let i=0;i<DIM;i++) arr[i] /= norm;
+    return arr;
+  }
+
+  // ---- paleta: ángulo dorado (phyllotaxis) para máxima separación de tono ----
+  function hslToRgb(h,s,l){
+    h/=360;
+    function hue2rgb(p,q,t){ if(t<0)t+=1; if(t>1)t-=1;
+      if(t<1/6) return p+(q-p)*6*t; if(t<1/2) return q;
+      if(t<2/3) return p+(q-p)*(2/3-t)*6; return p; }
+    const q = l<0.5 ? l*(1+s) : l+s-l*s, p = 2*l-q;
+    return [Math.round(hue2rgb(p,q,h+1/3)*255), Math.round(hue2rgb(p,q,h)*255), Math.round(hue2rgb(p,q,h-1/3)*255)];
+  }
+  const GOLDEN_ANGLE = 137.508;
+
+  function lerp(a,b,t){ return a+(b-a)*t; }
+
+  // ---- estado del sueño (patrones CPPN) ----
+  let PATTERN_DEFS = [];
+  let PATTERNS = [];
+  const auraEl = document.getElementById('aura');
+  const barsEl = document.getElementById('bars');
+  const seedRowEl = document.getElementById('seedRow');
+
+  function regenerateDream(seeds){
+    PATTERN_DEFS = []; PATTERNS = [];
+    for(let k=0;k<K;k++){
+      const seed = (seeds && seeds[k]!=null) ? (seeds[k]>>>0) : ((Math.random()*4294967296)>>>0);
+      const hue = (198 + k*GOLDEN_ANGLE) % 360;
+      const rgb = hslToRgb(hue, 0.62, 0.63);
+      const hex = '#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join('');
+      PATTERN_DEFS.push({ seed, hue, rgb, hex, name:'Memoria '+GREEK[k] });
+      PATTERNS.push(makePatternFromSeed(seed));
+    }
+    PATTERN_DEFS.forEach((p,i)=> auraEl.style.setProperty('--a'+i, p.hex));
+    buildBars();
+    seedRowEl.textContent = 'semillas: ' + PATTERN_DEFS.map(p=>p.seed).join(' · ');
+  }
+
+  function buildBars(){
+    barsEl.innerHTML = '';
+    PATTERN_DEFS.forEach((p,i)=>{
+      const row = document.createElement('div');
+      row.className='barRow mono';
+      row.innerHTML = `<span class="dot" style="background:${p.hex}; color:${p.hex}"></span>
+        <span class="barName" id="bn${i}">${p.name}</span>
+        <div class="barTrack"><div class="barFill" id="bf${i}" style="width:16.6%"></div></div>
+        <span class="barPct" id="bp${i}">17%</span>`;
+      barsEl.appendChild(row);
+    });
+  }
+
+  // ---- estado del campo ----
+  let x = new Float32Array(DIM);
+  let beta = 12, noiseT = 0.006, diffD = 0.12, iter = 0, energyHist = [];
+  let running = true;
+
+  function reseedField(scale){
+    scale = scale || 0.05;
+    for(let i=0;i<DIM;i++) x[i] = gaussianRandom()*scale;
+    iter = 0; energyHist = [];
+  }
+
+  // ---- persistencia (localStorage): solo 6 enteros reconstruyen las redes completas ----
+  function saveState(){
+    try{
+      const payload = JSON.stringify({
+        seeds: PATTERN_DEFS.map(p=>p.seed),
+        x:Array.from(x), beta, noiseT, diffD, iter, energyHist
+      });
+      localStorage.setItem(STORAGE_KEY, payload);
+      const note = document.getElementById('persistNote');
+      if(note) note.textContent = 'guardado localmente · ' + new Date().toLocaleTimeString();
+    }catch(e){
+      const note = document.getElementById('persistNote');
+      if(note) note.textContent = 'no se pudo guardar (localStorage bloqueado en este contexto)';
+    }
+  }
+
+  function loadState(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return false;
+      const s = JSON.parse(raw);
+      if(!s.x || s.x.length !== DIM) return false;
+      regenerateDream(s.seeds && s.seeds.length===K ? s.seeds : null);
+      x = Float32Array.from(s.x);
+      beta = s.beta ?? 12;
+      noiseT = s.noiseT ?? 0.006;
+      diffD = s.diffD ?? 0.12;
+      iter = s.iter ?? 0;
+      energyHist = s.energyHist || [];
+      return true;
+    }catch(e){ return false; }
+  }
+
+  // ---- física: Langevin (atractor Hopfield denso) + Laplaciano (difusión lateral cortical) ----
+  function step(){
+    const logits = new Float32Array(K);
+    for(let k=0;k<K;k++){
+      let d=0; const p=PATTERNS[k];
+      for(let i=0;i<DIM;i++) d += p[i]*x[i];
+      logits[k] = beta*d;
+    }
+    let maxL=-Infinity;
+    for(let k=0;k<K;k++) if(logits[k]>maxL) maxL=logits[k];
+    let sum=0; const w=new Float32Array(K);
+    for(let k=0;k<K;k++){ w[k]=Math.exp(logits[k]-maxL); sum+=w[k]; }
+    for(let k=0;k<K;k++) w[k] /= sum;
+
+    const target = new Float32Array(DIM);
+    for(let k=0;k<K;k++){
+      const p=PATTERNS[k], wk=w[k];
+      for(let i=0;i<DIM;i++) target[i] += wk*p[i];
+    }
+
+    const noiseScale = Math.sqrt(Math.max(2*noiseT*DT,0));
+    const newX = new Float32Array(DIM);
+    for(let iy=0; iy<GRID; iy++){
+      for(let ix=0; ix<GRID; ix++){
+        const i = iy*GRID+ix;
+        const xu = x[(iy>0?iy-1:iy)*GRID+ix];
+        const xd = x[(iy<GRID-1?iy+1:iy)*GRID+ix];
+        const xl = x[iy*GRID+(ix>0?ix-1:ix)];
+        const xr = x[iy*GRID+(ix<GRID-1?ix+1:ix)];
+        const lap = xu+xd+xl+xr-4*x[i];
+
+        const drift = (target[i]-x[i])*DT;
+        const diffusion = noiseScale*gaussianRandom();
+        newX[i] = x[i] + drift + diffD*DT*lap + diffusion;
+      }
+    }
+    x = newX;
+
+    const lse = maxL + Math.log(sum);
+    let ssq=0; for(let i=0;i<DIM;i++) ssq += x[i]*x[i];
+    const E = -lse/Math.max(beta,1e-6) + 0.5*ssq;
+
+    iter += 1;
+    energyHist.push(E);
+    if(energyHist.length>70) energyHist.shift();
+
+    return w;
+  }
+
+  // ---- render: color = identidad de memoria dominante (local), brillo = magnitud de activación ----
+  const canvas = document.getElementById('cv');
+  const ctx = canvas.getContext('2d');
+  const relev = new Float32Array(K);
+
+  function drawFrame(){
+    const img = ctx.createImageData(GRID,GRID);
+    let maxAbs = 1e-6;
+    for(let i=0;i<DIM;i++){ const a=Math.abs(x[i]); if(a>maxAbs) maxAbs=a; }
+
+    for(let i=0;i<DIM;i++){
+      let rs=0, gs=0, bs=0, s=0;
+      for(let k=0;k<K;k++){
+        const v = PATTERNS[k][i]*x[i];
+        const rel = v>0 ? v : 0;
+        relev[k]=rel; s+=rel;
+      }
+      if(s < 1e-8){
+        for(let k=0;k<K;k++){ rs+=PATTERN_DEFS[k].rgb[0]; gs+=PATTERN_DEFS[k].rgb[1]; bs+=PATTERN_DEFS[k].rgb[2]; }
+        rs/=K; gs/=K; bs/=K;
+      } else {
+        for(let k=0;k<K;k++){
+          const wgt = relev[k]/s;
+          rs += wgt*PATTERN_DEFS[k].rgb[0];
+          gs += wgt*PATTERN_DEFS[k].rgb[1];
+          bs += wgt*PATTERN_DEFS[k].rgb[2];
+        }
+      }
+
+      const b = Math.pow(Math.min(Math.abs(x[i])/maxAbs,1), 0.55);
+      const bright = 0.14 + 0.86*b;
+      img.data[i*4]   = lerp(14, rs, bright);
+      img.data[i*4+1] = lerp(16, gs, bright);
+      img.data[i*4+2] = lerp(13, bs, bright);
+      img.data[i*4+3] = 255;
+    }
+    ctx.putImageData(img,0,0);
+  }
+
+  function updateUI(w){
+    let topIdx=0; for(let k=1;k<K;k++) if(w[k]>w[topIdx]) topIdx=k;
+    for(let i=0;i<K;i++){
+      const fill = document.getElementById(`bf${i}`);
+      if(!fill) continue;
+      fill.style.width = (w[i]*100).toFixed(1)+'%';
+      fill.style.background = i===topIdx ? PATTERN_DEFS[i].hex : 'var(--border)';
+      document.getElementById(`bn${i}`).className = 'barName'+(i===topIdx?' top':'');
+      document.getElementById(`bp${i}`).textContent = Math.round(w[i]*100)+'%';
+    }
+    let H=0; for(let i=0;i<K;i++) if(w[i]>1e-9) H -= w[i]*Math.log(w[i]);
+    const entropy = H/Math.log(K);
+    const regime = entropy>0.7 ? 'soñando' : entropy<0.22 ? 'recordando' : 'asociando';
+    const topColor = PATTERN_DEFS[topIdx].hex;
+    const color = regime==='soñando' ? 'var(--amber)' : regime==='recordando' ? topColor : 'var(--chalk)';
+    const regimeEl = document.getElementById('regime');
+    regimeEl.textContent = '● '+regime;
+    regimeEl.style.color = color;
+    canvas.style.boxShadow = `0 0 44px -8px ${topColor}77`;
+    auraEl.style.opacity = String(0.3 + 0.5*entropy);
+    document.getElementById('iter').textContent = 't = '+iter;
+    document.getElementById('spark').setAttribute('stroke', topColor);
+
+    if(energyHist.length>1){
+      const mn=Math.min(...energyHist), mx=Math.max(...energyHist), sp=Math.max(mx-mn,1e-6);
+      const wpx=90, hpx=26;
+      const d = energyHist.map((e,i)=>{
+        const px=(i/(energyHist.length-1))*wpx, py=hpx-((e-mn)/sp)*hpx;
+        return (i===0?'M':'L')+px.toFixed(1)+','+py.toFixed(1);
+      }).join(' ');
+      document.getElementById('spark').setAttribute('d', d);
+    }
+  }
+
+  // ---- controles ----
+  const betaSlider = document.getElementById('beta');
+  const noiseSlider = document.getElementById('noise');
+  const diffSlider = document.getElementById('diff');
+
+  function syncSliderLabels(){
+    betaSlider.value = beta; noiseSlider.value = noiseT; diffSlider.value = diffD;
+    document.getElementById('betaVal').textContent = beta.toFixed(1);
+    document.getElementById('noiseVal').textContent = noiseT.toFixed(3);
+    document.getElementById('diffVal').textContent = diffD.toFixed(2);
+  }
+
+  betaSlider.addEventListener('input', e=>{ beta=parseFloat(e.target.value); document.getElementById('betaVal').textContent=beta.toFixed(1); });
+  noiseSlider.addEventListener('input', e=>{ noiseT=parseFloat(e.target.value); document.getElementById('noiseVal').textContent=noiseT.toFixed(3); });
+  diffSlider.addEventListener('input', e=>{ diffD=parseFloat(e.target.value); document.getElementById('diffVal').textContent=diffD.toFixed(2); });
+
+  const playBtn = document.getElementById('playBtn');
+  playBtn.addEventListener('click', ()=>{
+    running = !running;
+    playBtn.textContent = running ? '⏸ Pausar' : '▶ Correr';
+  });
+
+  document.getElementById('reseedBtn').addEventListener('click', ()=>{
+    regenerateDream(null);   // 6 semillas nuevas → 6 redes completamente nuevas
+    reseedField();
+    saveState();
+  });
+  document.getElementById('wakeBtn').addEventListener('click', ()=>{
+    beta = 38; noiseT = 0; diffD = 0;
+    syncSliderLabels();
+  });
+
+  // ---- loop ----
+  let frame=0;
+  function loop(){
+    if(running){
+      const w = step();
+      drawFrame();
+      frame++;
+      if(frame%3===0) updateUI(w);
+      if(frame%60===0) saveState();
+    }
+    requestAnimationFrame(loop);
+  }
+
+  // ---- init ----
+  const restored = loadState();
+  if(!restored){
+    regenerateDream(null);
+    reseedField();
+  }
+  playBtn.textContent = running ? '⏸ Pausar' : '▶ Correr';
+  syncSliderLabels();
+  document.getElementById('persistNote').textContent = restored ? 'sueño restaurado desde este navegador' : 'sueño nuevo · se guardará automáticamente';
+
+  window.addEventListener('beforeunload', saveState);
+  document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveState(); });
+
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
