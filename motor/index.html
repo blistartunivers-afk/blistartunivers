@@ -11,6 +11,7 @@
     --bg:#0f1310; --panel:#171d15; --border:#2b3225;
     --chalk:#EDEAE0; --chalkDim:#8f9584;
     --cyan:#7FD8C9; --amber:#E8A857;
+    --neon:#7FD8C9;
   }
   *{box-sizing:border-box;}
   body{
@@ -122,6 +123,34 @@
   <p class="foot sans">El <b>tono</b> de cada píxel codifica <b>qué memoria</b> domina ahí (correlación local rectificada, como un mapa de dominancia cortical); el <b>brillo</b> codifica <b>cuánta</b> activación hay. Los 6 tonos están espaciados por el <b>ángulo dorado</b> (137.5°, phyllotaxis). La difusión lateral D imita un modelo de Wilson-Cowan: la activación se esparce entre vecinos antes de decidirse por un atractor. Cada "Nuevo sueño" tira 6 semillas nuevas y reconstruye las 6 redes desde cero — nunca es la misma imagen dos veces. Con β alto, T→0 y D→0: recuerdo nítido y monocromático de una de las 6 formas inéditas. Con T y D altos: mosaico multicolor en movimiento — alucinación entre formas que ninguna existía antes de este sueño.</p>
 
   <p class="persistNote mono" id="persistNote">estado no guardado aún</p>
+
+  <!-- ===== GALERÍA AVANZADA ===== -->
+  <section class="gallery-section" id="gallery-section">
+    <div class="gallery-header">
+      <h2 class="gallery-title">Galería de Sueños</h2>
+      <span id="gallery-count" class="mono" style="color:var(--chalkDim); font-size:12px;">0 sueños</span>
+    </div>
+    
+    <div class="filter-bar" id="palette-filters"></div>
+    
+    <div class="controls-row">
+      <input type="text" class="search-box" id="search-box" placeholder="Buscar por nombre o seed..." />
+      <button class="sort-btn" data-sort="seed" data-label="Seed">Seed ↓</button>
+      <button class="sort-btn" data-sort="entropy_shannon" data-label="Shannon">Shannon</button>
+      <button class="sort-btn" data-sort="entropy_spatial" data-label="Espacial">Espacial</button>
+      <button class="sort-btn" data-sort="filename" data-label="Archivo">Archivo</button>
+    </div>
+    
+    <div class="range-inputs">
+      <label>Shannon: <input type="number" id="shannon-min" step="0.01" placeholder="min"><input type="number" id="shannon-max" step="0.01" placeholder="max"></label>
+      <label>Espacial: <input type="number" id="spatial-min" step="0.01" placeholder="min"><input type="number" id="spatial-max" step="0.01" placeholder="max"></label>
+      <label>Seed: <input type="number" id="seed-min" placeholder="min"><input type="number" id="seed-max" placeholder="max"></label>
+      <button id="clear-filters" style="padding:4px 10px; border-radius:6px; border:1px solid var(--border); background:var(--panel); color:var(--chalk); cursor:pointer; font-size:11px;">Limpiar</button>
+    </div>
+    
+    <div id="status" class="status">⟳ Cargando manifiesto neural...</div>
+    <div id="gallery"></div>
+  </section>
 </div>
 
 <script>
@@ -484,6 +513,11 @@
 
   requestAnimationFrame(loop);
 })();
-</script>
+
+  // GALERIA init
+  if(typeof initGallery==="function"){initGallery();}
+  window.loadDreamInMotor=function(fn){const it=allItems.find(i=>i.filename===fn);if(!it)return;regenerateDream(it.seed);reseedField();saveState();document.querySelector(".panel").scrollIntoView({behavior:"smooth"});const m=document.querySelector(".modal-overlay");if(m)m.remove();document.body.style.overflow="";};
+
+<script src="dream-loader.v2.js"></script>
 </body>
 </html>
