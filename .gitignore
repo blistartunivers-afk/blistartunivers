@@ -6,3 +6,22 @@
 *.secret
 secrets/
 
+# Dependencias
+node_modules/
+
+# Build
+dist/
+
+# Python
+__pycache__/
+*.pyc
+
+# Logs
+*.log
+server.log
+
+# Backups
+*.bak
+*.bak.*
+*.bak_*
+

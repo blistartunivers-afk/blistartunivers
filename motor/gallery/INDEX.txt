@@ -1,89 +1,89 @@
-# Motor de Imaginacion — Indice de galeria
+# Motor de Imaginación — Índice de galería
 # Paleta por defecto: viridis
-# Dimension: 512x512
+# Dimensión: 256x256
 # Total archivos: 84
-# Entropia espacial (min, avg): 1.16, 1.65
-dream_1785812859.pgm
-dream_1785813262.pgm
-dream_1785813267.pgm
-dream_1785813272.pgm
-dream_1786336903.pgm
-dream_1786336904.pgm
-dream_1786336906.pgm
-dream_1786336907.pgm
-dream_1786893955.png
-dream_1786893956.png
-dream_1786893957.png
-dream_1786893958.png
-dream_1786893959.png
-dream_1786893960.png
-dream_1786893961.png
-dream_1786893962.png
-dream_1786893991.png
-dream_1786893992.png
-dream_1786893993.png
-dream_1786893994.png
-dream_1786893995.png
-dream_1786893996.png
-dream_1786893997.png
-dream_1786893998.png
-dream_1786897674.png
-dream_1786897675.png
-dream_1786897676.png
-dream_1786897677.png
-dream_1786897678.png
-dream_1786897679.png
-dream_1786897680.png
-dream_1786897681.png
-dream_1786897832.png
-dream_1786897833.png
-dream_1786897861.png
-dream_1786897862.png
-dream_1786938797.png
-dream_1786938798.png
-dream_1786938799.png
-dream_1786938800.png
-dream_1786938801.png
-dream_1786938802.png
-dream_1786938803.png
-dream_1786938804.png
-dream_1787543851.png
-dream_1787543852.png
-dream_1787543853.png
-dream_1787543854.png
-dream_1787543855.png
-dream_1787543856.png
-dream_1787543857.png
-dream_1787543858.png
-dream_1788168616.png
-dream_1788168617.png
-dream_1788168618.png
-dream_1788168619.png
-dream_1788168620.png
-dream_1788168621.png
-dream_1788168622.png
-dream_1788168623.png
-dream_1788768277.png
-dream_1788768278.png
-dream_1788768279.png
-dream_1788768280.png
-dream_1788768281.png
-dream_1788768282.png
-dream_1788768283.png
-dream_1788768284.png
-dream_1789375321.png
-dream_1789375322.png
-dream_1789375323.png
-dream_1789375324.png
-dream_1789375325.png
-dream_1789375326.png
-dream_1789375327.png
-dream_1789375328.png
-dream_1789980224.png palette=viridis ent_spatial=2.04
-dream_1789980225.png palette=viridis ent_spatial=1.70
-dream_1789980226.png palette=viridis ent_spatial=1.72
-dream_1789980227.png palette=viridis ent_spatial=1.16
-dream_1789980228.png palette=viridis ent_spatial=1.48
-dream_1789980229.png palette=viridis ent_spatial=1.53
-dream_1789980230.png palette=viridis ent_spatial=2.24
-dream_1789980231.png palette=viridis ent_spatial=1.33
+# Entropía espacial (min, avg): 0.45, 12.29
+dream_1785812859.pgm palette=viridis ent_spatial=131.41
+dream_1785813262.pgm palette=viridis ent_spatial=109.19
+dream_1785813267.pgm palette=viridis ent_spatial=73.43
+dream_1785813272.pgm palette=viridis ent_spatial=100.02
+dream_1786336903.pgm palette=viridis ent_spatial=85.15
+dream_1786336904.pgm palette=viridis ent_spatial=143.70
+dream_1786893955.png palette=viridis ent_spatial=3.53
+dream_1786336906.pgm palette=viridis ent_spatial=142.23
+dream_1786336907.pgm palette=viridis ent_spatial=93.49
+dream_1786893956.png palette=viridis ent_spatial=1.81
+dream_1786893957.png palette=viridis ent_spatial=2.72
+dream_1786893958.png palette=viridis ent_spatial=5.54
+dream_1786893959.png palette=viridis ent_spatial=3.54
+dream_1786893960.png palette=viridis ent_spatial=1.90
+dream_1786893961.png palette=viridis ent_spatial=2.81
+dream_1786893962.png palette=viridis ent_spatial=2.48
+dream_1786893991.png palette=viridis ent_spatial=2.34
+dream_1786893992.png palette=viridis ent_spatial=3.41
+dream_1786893993.png palette=viridis ent_spatial=3.55
+dream_1786893994.png palette=viridis ent_spatial=3.02
+dream_1786893995.png palette=viridis ent_spatial=3.48
+dream_1786893996.png palette=viridis ent_spatial=2.55
+dream_1786893997.png palette=viridis ent_spatial=1.86
+dream_1786893998.png palette=viridis ent_spatial=2.11
+dream_1786897674.png palette=viridis ent_spatial=2.26
+dream_1786897675.png palette=viridis ent_spatial=2.57
+dream_1786897676.png palette=viridis ent_spatial=3.89
+dream_1786897677.png palette=viridis ent_spatial=3.65
+dream_1786897678.png palette=viridis ent_spatial=2.58
+dream_1786897679.png palette=viridis ent_spatial=1.66
+dream_1786897680.png palette=viridis ent_spatial=3.35
+dream_1786897681.png palette=viridis ent_spatial=2.47
+dream_1786897832.png palette=viridis ent_spatial=4.41
+dream_1786897833.png palette=viridis ent_spatial=3.69
+dream_1786897861.png palette=viridis ent_spatial=3.64
+dream_1786897862.png palette=viridis ent_spatial=3.61
+dream_1786938797.png palette=viridis ent_spatial=1.24
+dream_1786938798.png palette=viridis ent_spatial=1.52
+dream_1786938799.png palette=viridis ent_spatial=1.15
+dream_1786938800.png palette=viridis ent_spatial=2.21
+dream_1786938801.png palette=viridis ent_spatial=1.50
+dream_1786938802.png palette=viridis ent_spatial=1.42
+dream_1786938803.png palette=viridis ent_spatial=0.60
+dream_1786938804.png palette=viridis ent_spatial=1.50
+dream_1787543851.png palette=viridis ent_spatial=1.88
+dream_1787543852.png palette=viridis ent_spatial=2.40
+dream_1787543853.png palette=viridis ent_spatial=0.65
+dream_1787543854.png palette=viridis ent_spatial=0.80
+dream_1787543855.png palette=viridis ent_spatial=1.90
+dream_1787543856.png palette=viridis ent_spatial=1.26
+dream_1787543857.png palette=viridis ent_spatial=1.43
+dream_1787543858.png palette=viridis ent_spatial=0.45
+dream_1788168616.png palette=viridis ent_spatial=1.69
+dream_1788168617.png palette=viridis ent_spatial=0.81
+dream_1788168618.png palette=viridis ent_spatial=1.51
+dream_1788168619.png palette=viridis ent_spatial=1.15
+dream_1788168620.png palette=viridis ent_spatial=1.68
+dream_1788168621.png palette=viridis ent_spatial=2.33
+dream_1788168622.png palette=viridis ent_spatial=1.36
+dream_1788168623.png palette=viridis ent_spatial=1.43
+dream_1788768277.png palette=viridis ent_spatial=1.25
+dream_1788768278.png palette=viridis ent_spatial=2.22
+dream_1788768279.png palette=viridis ent_spatial=1.47
+dream_1788768280.png palette=viridis ent_spatial=1.70
+dream_1788768281.png palette=viridis ent_spatial=1.49
+dream_1788768282.png palette=viridis ent_spatial=1.23
+dream_1788768283.png palette=viridis ent_spatial=0.62
+dream_1788768284.png palette=viridis ent_spatial=0.93
+dream_1789375321.png palette=viridis ent_spatial=1.64
+dream_1789375322.png palette=viridis ent_spatial=1.55
+dream_1789375323.png palette=viridis ent_spatial=1.16
+dream_1789375324.png palette=viridis ent_spatial=1.36
+dream_1789375325.png palette=viridis ent_spatial=1.19
+dream_1789375326.png palette=viridis ent_spatial=1.46
+dream_1789375327.png palette=viridis ent_spatial=2.13
+dream_1789375328.png palette=viridis ent_spatial=1.44
+dream_1789980224.png palette=viridis ent_spatial=0.86
+dream_1789980225.png palette=viridis ent_spatial=1.06
+dream_1789980226.png palette=viridis ent_spatial=1.40
+dream_1789980227.png palette=viridis ent_spatial=2.05
+dream_1789980228.png palette=viridis ent_spatial=1.65
+dream_1789980229.png palette=viridis ent_spatial=1.88
+dream_1789980230.png palette=viridis ent_spatial=0.75
+dream_1789980231.png palette=viridis ent_spatial=2.64

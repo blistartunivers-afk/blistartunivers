@@ -5,12 +5,18 @@
   "type": "module",
   "scripts": {
     "dev": "npx serve -s . -l 8080",
-    "build": "mkdir -p dist && cp index.html dist/index.html && cp -r assets dist/ 2>/dev/null || true",
+    "build": "node scripts/build.mjs",
     "preview": "npx serve -s dist -l 8080",
     "lighthouse": "lhci autorun"
   },
   "devDependencies": {
+    "@lhci/cli": "^0.13.0",
+    "cssnano": "^9.0.5",
+    "html-minifier-terser": "^7.2.0",
+    "postcss": "^8.5.28",
+    "postcss-cli": "^12.0.0",
     "serve": "^14.2.0",
-    "@lhci/cli": "^0.13.0"
+    "terser": "^5.51.2",
+    "workbox-cli": "^7.4.1"
   }
 }
