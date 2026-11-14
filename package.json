@@ -15,7 +15,7 @@
     "html-minifier-terser": "^7.2.0",
     "postcss": "^8.5.28",
     "postcss-cli": "^12.0.0",
-    "serve": "^14.2.0",
+    "serve": "^14.2.8",
     "terser": "^5.51.2",
     "workbox-cli": "^7.4.1"
   }
