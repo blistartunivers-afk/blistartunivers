@@ -10,7 +10,7 @@
     "lighthouse": "lhci autorun"
   },
   "devDependencies": {
-    "@lhci/cli": "^0.13.0",
+    "@lhci/cli": "^0.15.1",
     "cssnano": "^9.0.5",
     "html-minifier-terser": "^7.2.0",
     "postcss": "^8.5.28",
