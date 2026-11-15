@@ -18,7 +18,7 @@ npm ci
 npm run dev
 ```
 
-El servidor local usa el puerto 8080. Para generar `dist/`, ejecuta `npm run build`; `npm run preview` sirve esa carpeta. El sitio también puede inspeccionarse directamente desde `index.html`.
+El servidor local usa el puerto 8080. El sitio también puede inspeccionarse directamente desde `index.html`. El script de compilación del repositorio necesita ajustes antes de poder usarse de forma reproducible en CI.
 
 ## Proyectos relacionados
 
