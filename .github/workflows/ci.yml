@@ -29,6 +29,16 @@ jobs:
       - name: Build production
         run: npm run build
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Test evolution engine
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_evolution_engine.py
+
       - name: Verify build output
         run: |
           echo "=== dist/ contents ==="
@@ -37,6 +47,16 @@ jobs:
           ls -la dist/index.html dist/motor/index.html dist/sw.js dist/manifest.json
           echo "=== HTML validation ==="
           npx html-validate dist/index.html dist/motor/index.html || true
+
+      - name: Start preview server
+        run: |
+          npx serve -s dist -l 8080 > /tmp/blistartunivers-serve.log 2>&1 &
+          for attempt in 1 2 3 4 5 6 7 8 9 10; do
+            if curl -fsS http://localhost:8080/ > /dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/blistartunivers-serve.log
+          exit 1
 
       - name: Lighthouse CI
         uses: treosh/lighthouse-ci-action@v11

@@ -2,16 +2,16 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BlistArt Univers — SARA OS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
   :root{
-    --bg: #0a0e14;
-    --bg-raised: #0f141c;
-    --line: #232b38;
+    --bg: #02040b;
+    --bg-raised: #0b1220;
+    --line: #273449;
     --ink: #e9e7e1;
     --ink-dim: #8b93a3;
     --signal: #5eead4;
@@ -32,21 +32,40 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* faint synapse grid background */
+  /* Capas de estrellas: CSS ligero, sin scripts ni peticiones externas. */
   body::before{
     content:'';
     position: fixed; inset: 0;
     background-image:
-      radial-gradient(circle at 15% 20%, rgba(94,234,212,0.06), transparent 40%),
-      radial-gradient(circle at 85% 70%, rgba(245,166,35,0.05), transparent 45%);
+      radial-gradient(1px 1px at 13% 18%, #fff 98%, transparent),
+      radial-gradient(2px 2px at 38% 64%, #b8eaff 98%, transparent),
+      radial-gradient(1px 1px at 72% 22%, #fff 98%, transparent),
+      radial-gradient(2px 2px at 86% 78%, #8ce9e1 98%, transparent),
+      radial-gradient(1px 1px at 57% 43%, #fff 98%, transparent),
+      radial-gradient(1px 1px at 24% 83%, #fff 98%, transparent);
+    background-size: 310px 290px;
+    opacity: .62;
+    animation: star-drift 70s linear infinite, star-twinkle 5s ease-in-out infinite alternate;
     pointer-events: none;
     z-index: 0;
   }
+  body::after{
+    content:'';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse at 12% 14%, rgba(42,112,154,.19), transparent 42%),
+      radial-gradient(ellipse at 83% 62%, rgba(38,138,124,.12), transparent 48%),
+      radial-gradient(ellipse at 55% 110%, rgba(107,64,150,.13), transparent 45%);
+    pointer-events:none;
+    z-index:0;
+  }
+  @keyframes star-drift{ to{ background-position: 310px 290px; } }
+  @keyframes star-twinkle{ to{ opacity: .95; } }
 
   a{ color: var(--signal); text-decoration: none; border-bottom: 1px solid var(--signal-dim); }
   a:hover{ border-bottom-color: var(--signal); }
 
-  .wrap{ max-width: 720px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+  .wrap{ max-width: 980px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
 
   /* ---------- top status bar (echoes the real terminal HUD) ---------- */
   .hud{
@@ -75,12 +94,12 @@
   }
   .brand a{ border: none; color: var(--ink); }
 
-  .navlinks{ display:flex; gap: 20px; font-size: 13px; }
+  .navlinks{ display:flex; flex-wrap:wrap; gap: 20px; font-size: 13px; }
   .navlinks a{ color: var(--ink-dim); border: none; }
   .navlinks a:hover{ color: var(--signal); }
 
   /* ---------- hero ---------- */
-  .hero{ padding: 64px 0 40px; }
+  .hero{ padding: 64px 0 54px; }
   .eyebrow{
     font-size: 12px; color: var(--amber);
     letter-spacing: 0.12em; text-transform: uppercase;
@@ -92,11 +111,11 @@
   h1{
     font-family: 'Fraunces', serif;
     font-weight: 700;
-    font-size: clamp(38px, 9vw, 58px);
+    font-size: clamp(42px, 7vw, 76px);
     line-height: 1.04;
     letter-spacing: -0.01em;
     color: var(--ink);
-    max-width: 11ch;
+    max-width: 15ch;
   }
   h1 em{ color: var(--signal); font-style: normal; }
 
@@ -120,6 +139,39 @@
     max-width: 100%;
     height: auto;
   }
+  .hero-visual{
+    display:grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(220px, .8fr);
+    gap:16px;
+    margin:34px 0 8px;
+  }
+  .visual-panel{
+    position:relative;
+    overflow:hidden;
+    min-height:220px;
+    border:1px solid rgba(94,234,212,.28);
+    border-radius:18px;
+    background:linear-gradient(145deg, rgba(12,29,45,.94), rgba(6,10,22,.92));
+    box-shadow:0 24px 70px rgba(0,0,0,.38), inset 0 1px rgba(255,255,255,.06);
+  }
+  .visual-panel::before{
+    content:''; position:absolute; inset:-30%;
+    background:radial-gradient(circle, rgba(94,234,212,.16), transparent 48%);
+    animation: aura 8s ease-in-out infinite alternate;
+  }
+  @keyframes aura{ to{ transform:translate(18%, -12%) scale(1.12); } }
+  .visual-panel .neural-net{ position:relative; display:block; width:100%; margin:26px auto 0; }
+  .visual-caption{ position:relative; padding:0 20px 18px; color:var(--ink-dim); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  .hero-image{ position:relative; margin:0; }
+  .hero-image img{ width:100%; height:100%; min-height:220px; display:block; object-fit:cover; border-radius:18px; border:1px solid rgba(245,166,35,.3); }
+  .hero-image figcaption{ position:absolute; bottom:12px; left:12px; padding:7px 10px; border-radius:6px; background:rgba(2,4,11,.78); color:#fff; font-size:11px; }
+
+  .dream-gallery{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; margin-top:28px; }
+  .dream-card{ margin:0; overflow:hidden; border:1px solid var(--line); border-radius:14px; background:var(--bg-raised); box-shadow:0 18px 40px rgba(0,0,0,.22); }
+  .dream-card img{ display:block; width:100%; aspect-ratio:1; object-fit:cover; transition:transform .5s ease; }
+  .dream-card:hover img{ transform:scale(1.06); }
+  .dream-card figcaption{ padding:14px 16px; font-size:12px; color:var(--ink-dim); }
+  .dream-card b{ display:block; color:var(--ink); font-size:13px; margin-bottom:3px; }
 
   .synapse-line{ stroke: var(--signal); stroke-width: 1.2; opacity: 0.5; }
   .synapse-line.active{ animation: glow-synapse 3s ease-in-out infinite; opacity: 0.9; }
@@ -261,6 +313,14 @@
   @media (max-width: 480px){
     .hud{ font-size: 10.5px; }
     nav{ flex-direction: column; align-items: flex-start; gap: 14px; }
+    .dream-gallery{ grid-template-columns:1fr; }
+  }
+
+  @media (max-width: 700px){ .hero-visual{ grid-template-columns:1fr; } }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    body::before, .visual-panel::before, .synapse-line.active, .neuron, .sensor-node, .mark .pulse{ animation:none !important; }
+    .dream-card img{ transition:none; }
   }
 
   @media (prefers-reduced-motion: no-preference){
@@ -294,6 +354,7 @@
     <div class="navlinks">
       <a href="#inicio">Inicio</a>
       <a href="#proyecto">Proyecto</a>
+      <a href="#visuales">Visuales</a>
       <a href="#memoria">Memoria</a>
       <a href="#blog">Blog</a>
       <a href="#contacto">Contacto</a>
@@ -309,6 +370,8 @@
       control sensorial directo, y una red de agentes que se auditan entre sí.
     </p>
 
+    <div class="hero-visual">
+      <div class="visual-panel">
     <!-- Red neuronal animada -->
     <svg class="neural-net" viewBox="0 0 480 180" preserveAspectRatio="xMidYMid meet">
       <defs>
@@ -341,10 +404,37 @@
       
       <circle cx="400" cy="90" r="5" fill="#5eead4" class="neuron" opacity="0.9"/>
     </svg>
+    <div class="visual-caption">Red de conexiones · representación conceptual</div>
+      </div>
+      <figure class="hero-image">
+        <img src="motor/gallery/dream_1786893958.png" alt="Patrón visual generado por el motor de imaginación" fetchpriority="high">
+        <figcaption>Motor de imaginación · CPPN</figcaption>
+      </figure>
+    </div>
 
     <div class="cta-row">
       <a href="#blog">Ver blog →</a>
       <a href="#proyecto">Cómo funciona SARA</a>
+    </div>
+  </section>
+
+  <section id="visuales">
+    <div class="tag">001 — Exploración visual</div>
+    <h2>Imágenes nacidas del motor</h2>
+    <p>Una muestra de los patrones generados por el motor de imaginación. Cada imagen es un resultado visual del proyecto, presentado aquí sin datos simulados.</p>
+    <div class="dream-gallery">
+      <figure class="dream-card">
+        <img src="motor/gallery/dream_1786893955.png" alt="Primer patrón abstracto generado por el motor" loading="lazy" decoding="async">
+        <figcaption><b>Exploración 01</b>Patrón generativo</figcaption>
+      </figure>
+      <figure class="dream-card">
+        <img src="motor/gallery/dream_1786893958.png" alt="Segundo patrón abstracto generado por el motor" loading="lazy" decoding="async">
+        <figcaption><b>Exploración 02</b>Patrón generativo</figcaption>
+      </figure>
+      <figure class="dream-card">
+        <img src="motor/gallery/dream_1786893994.png" alt="Tercer patrón abstracto generado por el motor" loading="lazy" decoding="async">
+        <figcaption><b>Exploración 03</b>Patrón generativo</figcaption>
+      </figure>
     </div>
   </section>
 

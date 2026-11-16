@@ -1,12 +1,13 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
 import { minify } from 'terser';
 import { minify as minifyHtml } from 'html-minifier-terser';
 import postcss from 'postcss';
 import cssnano from 'cssnano';
-import { execSync } from 'child_process';
+import { injectManifest } from 'workbox-build';
 
-const ROOT = '/data/data/com.termux/files/home/blistartunivers';
+const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DIST = join(ROOT, 'dist');
 const MOTOR = join(ROOT, 'motor');
 const GALLERY = join(MOTOR, 'gallery');
@@ -61,17 +62,6 @@ function hashFile(content) {
   return Math.abs(hash).toString(36).substring(0, 8);
 }
 
-async function compileTypeScript() {
-  console.log('  Compilando TypeScript...');
-  try {
-    execSync('npx tsc --project tsconfig.json', { cwd: ROOT, stdio: 'inherit' });
-    console.log('  ✓ TypeScript compilado');
-  } catch (e) {
-    console.error('  ✗ Error compilando TypeScript:', e.message);
-    throw e;
-  }
-}
-
 async function processMotorHtml(html) {
   let result = html;
   
@@ -120,16 +110,13 @@ async function build() {
   mkdirSync(join(DIST, 'motor'), { recursive: true });
   mkdirSync(join(DIST, 'motor', 'gallery'), { recursive: true });
   
-  // 1. Compilar TypeScript primero
-  await compileTypeScript();
-  
-  const swRegistration = `<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>console.log('[SW] Registered:',r.scope)).catch(e=>console.warn('[SW] Registration failed:',e))}</script>`;
+  const swRegistration = (path) => `<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('${path}').catch(e=>console.warn('[SW] Registration failed:',e))}</script>`;
   
   console.log('  Minificando index.html (root)...');
   await minifyHtmlFile(join(ROOT, 'index.html'), join(DIST, 'index.html'));
   
   let rootHtml = readFileSync(join(DIST, 'index.html'), 'utf-8');
-  rootHtml = rootHtml.replace('</body>', swRegistration + '</body>');
+  rootHtml = rootHtml.replace('</body>', swRegistration('sw.js') + '</body>');
   writeFileSync(join(DIST, 'index.html'), rootHtml);
   
   console.log('  Procesando motor/index.html...');
@@ -146,18 +133,13 @@ async function build() {
     keepClosingSlash: true
   });
   
-  const finalMotorHtmlWithSw = finalMotorHtml.replace('</body>', swRegistration + '</body>');
+  const finalMotorHtmlWithSw = finalMotorHtml.replace('</body>', swRegistration('../sw.js') + '</body>');
   writeFileSync(join(DIST, 'motor', 'index.html'), finalMotorHtmlWithSw);
   
   console.log('  Minificando dream-loader.v2.js (compilado)...');
   const loaderJs = readFileSync(join(MOTOR, 'dream-loader.v2.js'), 'utf-8');
   const minifiedLoader = await minifyJs(loaderJs);
   writeFileSync(join(DIST, 'motor', 'dream-loader.v2.js'), minifiedLoader);
-  
-  console.log('  Minificando cppn-engine.js (compilado)...');
-  const engineJs = readFileSync(join(MOTOR, 'cppn-engine.js'), 'utf-8');
-  const minifiedEngine = await minifyJs(engineJs);
-  writeFileSync(join(DIST, 'motor', 'cppn-engine.js'), minifiedEngine);
   
   console.log('  Copiando galeria...');
   copyDir(GALLERY, join(DIST, 'motor', 'gallery'));
@@ -179,10 +161,17 @@ async function build() {
       'index.html': hashFile(readFileSync(join(DIST, 'index.html'), 'utf-8')),
       'motor/index.html': hashFile(readFileSync(join(DIST, 'motor', 'index.html'), 'utf-8')),
       'motor/dream-loader.v2.js': hashFile(readFileSync(join(DIST, 'motor', 'dream-loader.v2.js'), 'utf-8')),
-      'motor/cppn-engine.js': hashFile(readFileSync(join(DIST, 'motor', 'cppn-engine.js'), 'utf-8')),
     }
   };
   writeFileSync(join(DIST, 'manifest.json'), JSON.stringify(manifest, null, 2));
+
+  await injectManifest({
+    swSrc: join(ROOT, 'scripts', 'sw-template.js'),
+    swDest: join(DIST, 'sw.js'),
+    globDirectory: DIST,
+    globPatterns: ['**/*'],
+    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+  });
   
   console.log('\n✓ Build completado en', DIST);
   console.log('  Archivos:', Object.keys(manifest.files).length);
