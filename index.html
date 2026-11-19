@@ -172,6 +172,24 @@
   .dream-card:hover img{ transform:scale(1.06); }
   .dream-card figcaption{ padding:14px 16px; font-size:12px; color:var(--ink-dim); }
   .dream-card b{ display:block; color:var(--ink); font-size:13px; margin-bottom:3px; }
+  .story-timeline{ margin-top:30px; display:grid; gap:14px; }
+  .story-entry{ position:relative; padding:20px 22px 20px 25px; border:1px solid var(--line); border-left:3px solid var(--signal); border-radius:0 12px 12px 0; background:linear-gradient(110deg, rgba(18,42,54,.9), rgba(9,15,27,.92)); }
+  .story-entry:nth-child(2){ border-left-color:var(--amber); }
+  .story-entry time{ display:block; margin-bottom:8px; color:var(--signal); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+  .story-entry:nth-child(2) time{ color:var(--amber); }
+  .story-entry h3{ font-family:'Fraunces',serif; font-size:21px; font-weight:600; margin-bottom:7px; }
+  .story-entry p{ max-width:70ch; }
+  .story-now{ margin-top:24px; padding:22px; border:1px solid rgba(94,234,212,.34); border-radius:14px; background:rgba(10,29,38,.72); }
+  .story-now h3{ font-family:'Fraunces',serif; font-size:22px; margin-bottom:10px; }
+  .story-now b{ color:var(--signal); font-weight:600; }
+  .story-now p + p{ margin-top:12px; }
+
+  .mark .orbit-line{ stroke-dasharray:6 6; animation:orbit-flow 1.8s linear infinite; }
+  .mark .orbit-node{ transform-box:fill-box; transform-origin:center; animation:orbit-pulse 2.2s ease-in-out infinite; }
+  .mark .orbit-node:nth-of-type(even){ animation-delay:.6s; }
+  .mark:hover .orbit-line, .mark:hover .orbit-node{ filter:drop-shadow(0 0 5px var(--signal)); }
+  @keyframes orbit-flow{ to{ stroke-dashoffset:-24; } }
+  @keyframes orbit-pulse{ 50%{ transform:scale(1.4); opacity:1; } }
 
   .synapse-line{ stroke: var(--signal); stroke-width: 1.2; opacity: 0.5; }
   .synapse-line.active{ animation: glow-synapse 3s ease-in-out infinite; opacity: 0.9; }
@@ -319,7 +337,7 @@
   @media (max-width: 700px){ .hero-visual{ grid-template-columns:1fr; } }
   @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior:auto; }
-    body::before, .visual-panel::before, .synapse-line.active, .neuron, .sensor-node, .mark .pulse{ animation:none !important; }
+    body::before, .visual-panel::before, .synapse-line.active, .neuron, .sensor-node, .mark .pulse, .mark .orbit-line, .mark .orbit-node{ animation:none !important; }
     .dream-card img{ transition:none; }
   }
 
@@ -338,16 +356,18 @@
 
   <nav>
     <div class="brand">
-      <svg class="mark" viewBox="0 0 84 84" width="28" height="28" fill="none">
-        <circle cx="42" cy="42" r="3" fill="#5eead4" class="pulse"/>
-        <path d="M42 42 C 30 30, 18 34, 12 22" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"/>
-        <path d="M42 42 C 54 30, 66 34, 72 20" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"/>
-        <path d="M42 42 C 30 54, 20 58, 14 70" stroke="#f5a623" stroke-width="1.4" fill="none" opacity="0.55"/>
-        <path d="M42 42 C 54 54, 64 58, 70 68" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"/>
-        <circle cx="12" cy="22" r="2" fill="#5eead4" opacity="0.7"/>
-        <circle cx="72" cy="20" r="2" fill="#5eead4" opacity="0.7"/>
-        <circle cx="14" cy="70" r="2" fill="#f5a623" opacity="0.55"/>
-        <circle cx="70" cy="68" r="2" fill="#5eead4" opacity="0.7"/>
+      <svg class="mark" viewBox="0 0 84 84" width="28" height="28" fill="none" role="img" aria-labelledby="brand-mark-title brand-mark-desc">
+        <title id="brand-mark-title">Símbolo de Sara</title>
+        <desc id="brand-mark-desc">Un nodo central enlazado con cuatro nodos; las líneas muestran un pulso visual.</desc>
+        <circle cx="42" cy="42" r="3" fill="#5eead4" class="pulse"><title>Nodo central</title></circle>
+        <path class="orbit-line" d="M42 42 C 30 30, 18 34, 12 22" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"><title>Conexión superior izquierda</title></path>
+        <path class="orbit-line" d="M42 42 C 54 30, 66 34, 72 20" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"><title>Conexión superior derecha</title></path>
+        <path class="orbit-line" d="M42 42 C 30 54, 20 58, 14 70" stroke="#f5a623" stroke-width="1.4" fill="none" opacity="0.7"><title>Conexión inferior izquierda</title></path>
+        <path class="orbit-line" d="M42 42 C 54 54, 64 58, 70 68" stroke="#5eead4" stroke-width="1.4" fill="none" opacity="0.7"><title>Conexión inferior derecha</title></path>
+        <circle class="orbit-node" cx="12" cy="22" r="2" fill="#5eead4" opacity="0.7"><title>Nodo superior izquierdo</title></circle>
+        <circle class="orbit-node" cx="72" cy="20" r="2" fill="#5eead4" opacity="0.7"><title>Nodo superior derecho</title></circle>
+        <circle class="orbit-node" cx="14" cy="70" r="2" fill="#f5a623" opacity="0.7"><title>Nodo inferior izquierdo</title></circle>
+        <circle class="orbit-node" cx="70" cy="68" r="2" fill="#5eead4" opacity="0.7"><title>Nodo inferior derecho</title></circle>
       </svg>
       BLISTARTUNIVERS
     </div>
@@ -566,13 +586,37 @@
   </section>
 
   <section id="blog">
-    <div class="tag">003 — Blog</div>
-    <h2>Bitácora del ecosistema</h2>
+    <div class="tag">003 — Bitácora de Sara</div>
+    <h2>De BLIST a Sara OS</h2>
     <p>
-      Notas de desarrollo, decisiones de arquitectura y hallazgos reales operando SARA,
-      Nervio y los agentes CLI en paralelo. Próximamente aquí — registro de lo que
-      funciona, lo que falla, y lo que se corrige.
+      Sara es el agente que Estiven desarrolla dentro de BLIST. Su historia está en
+      las versiones, las integraciones y las decisiones tomadas mientras el sistema
+      crecía en Android y Termux.
     </p>
+    <div class="story-timeline">
+      <article class="story-entry">
+        <time datetime="2025-12-17">17 diciembre 2025</time>
+        <h3>El origen: BLIST v1</h3>
+        <p>Estiven inicia BLIST. Ese primer entorno da lugar a la evolución técnica de la que nace Sara.</p>
+      </article>
+      <article class="story-entry">
+        <time datetime="2026-05-20">20 mayo 2026</time>
+        <h3>Sara OS toma forma</h3>
+        <p>El proyecto empieza a tratar a Sara como un agente con memoria, herramientas y una relación directa con el dispositivo donde funciona.</p>
+      </article>
+      <article class="story-entry">
+        <time datetime="2026-09-15">15 septiembre 2026</time>
+        <h3>BLIST v11 · Triforce</h3>
+        <p>BLIST v11 reúne la CLI de Sara, memoria, herramientas, sensores y puentes con Android. El agente coordina esas piezas y consulta un modelo de lenguaje para generar respuestas.</p>
+      </article>
+    </div>
+    <div class="story-now">
+      <h3>Sara hoy · noviembre de 2026</h3>
+      <p><b>El agente.</b> Sara vive en BLIST v11, principalmente en su núcleo Python. Mantiene una conversación, decide cuándo usar herramientas y coordina módulos del sistema. Sara no es el archivo de pesos de SaraIA ni un proveedor de lenguaje: esos modelos son parte de lo que puede utilizar.</p>
+      <p><b>Memoria.</b> El sistema guarda episodios y recupera información semántica para aportar contexto a las respuestas. También incorpora búsqueda de archivos leídos anteriormente; esa integración sigue en validación local.</p>
+      <p><b>Modelos y acción.</b> El código contempla Ollama Cloud, Gemini, OpenRouter y Mistral, según la configuración disponible. Sus herramientas conectan la conversación con archivos, comandos y funciones de Android; sensores y permisos determinan qué datos puede usar en cada momento.</p>
+      <p><b>Estado real.</b> Hay módulos de aprendizaje, evolución, Kaizen y monitores de actividad, pero su presencia en el código no significa que todos estén activos o se mejoren solos en cada sesión. La capacidad concreta depende del proceso en marcha, las claves y los servicios conectados.</p>
+    </div>
   </section>
 
   <section id="contacto">

@@ -110,13 +110,18 @@ async function build() {
   mkdirSync(join(DIST, 'motor'), { recursive: true });
   mkdirSync(join(DIST, 'motor', 'gallery'), { recursive: true });
   
-  const swRegistration = (path) => `<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('${path}').catch(e=>console.warn('[SW] Registration failed:',e))}</script>`;
+  const swRegistration = (path) => `<script src="${path}" defer></script>`;
+  writeFileSync(join(DIST, 'sw-register.js'),
+    "if ('serviceWorker' in navigator) {\n" +
+    "  navigator.serviceWorker.register(new URL('sw.js', document.currentScript.src))\n" +
+    "    .catch(error => console.warn('[SW] Registration failed:', error));\n" +
+    "}\n");
   
   console.log('  Minificando index.html (root)...');
   await minifyHtmlFile(join(ROOT, 'index.html'), join(DIST, 'index.html'));
   
   let rootHtml = readFileSync(join(DIST, 'index.html'), 'utf-8');
-  rootHtml = rootHtml.replace('</body>', swRegistration('sw.js') + '</body>');
+  rootHtml = rootHtml.replace('</body>', swRegistration('sw-register.js') + '</body>');
   writeFileSync(join(DIST, 'index.html'), rootHtml);
   
   console.log('  Procesando motor/index.html...');
@@ -133,7 +138,7 @@ async function build() {
     keepClosingSlash: true
   });
   
-  const finalMotorHtmlWithSw = finalMotorHtml.replace('</body>', swRegistration('../sw.js') + '</body>');
+  const finalMotorHtmlWithSw = finalMotorHtml.replace('</body>', swRegistration('../sw-register.js') + '</body>');
   writeFileSync(join(DIST, 'motor', 'index.html'), finalMotorHtmlWithSw);
   
   console.log('  Minificando dream-loader.v2.js (compilado)...');
