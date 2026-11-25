@@ -22,23 +22,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build site
-        run: npm run build
-
-      - name: Serve build for Lighthouse
-        run: npx serve -s dist -l 8080 &
-
-      - name: Wait for server ready
-        run: |
-          for i in {1..30}; do
-            if curl -s http://localhost:8080 > /dev/null; then
-              echo "Server ready"
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "Server failed to start"
-          exit 1
+      - name: Build site and run regression tests
+        run: node --test tests/*.test.mjs
 
       - name: Run Lighthouse CI
         uses: treosh/lighthouse-ci-action@72f881228236981b625ed765b928efb1786a1f55 # v11

@@ -19,6 +19,11 @@ test('build works outside the checkout and emits the motor module it imports', (
     }
     assert.ok(existsSync(join(root, 'dist/motor/dream-loader.v2.js')));
     assert.ok(existsSync(join(root, 'dist/motor/gallery/INDEX.txt')));
+    const app = JSON.parse(readFileSync(join(root, 'dist/app.webmanifest'), 'utf8'));
+    for (const icon of app.icons) {
+      assert.ok(existsSync(join(root, 'dist', icon.src)));
+    }
+    assert.ok(existsSync(join(root, 'dist/sw.js')));
     const manifest = JSON.parse(readFileSync(join(root, 'dist/manifest.json'), 'utf8'));
     for (const path of Object.keys(manifest.files)) {
       assert.ok(existsSync(join(root, 'dist', path)), `missing manifest entry: ${path}`);

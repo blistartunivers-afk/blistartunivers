@@ -145,6 +145,10 @@ async function build() {
   if (existsSync(join(ROOT, 'assets'))) {
     copyDir(join(ROOT, 'assets'), join(DIST, 'assets'));
   }
+
+  for (const file of ['app.webmanifest', 'register-sw.js', 'sw.js', 'robots.txt']) {
+    writeFileSync(join(DIST, file), readFileSync(join(ROOT, file)));
+  }
   
   const manifest = {
     version: '11.0.0',
