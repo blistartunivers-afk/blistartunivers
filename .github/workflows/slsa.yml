@@ -12,7 +12,7 @@ permissions:
 jobs:
   build:
     name: Build and generate provenance
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@07e64b653f10a80b6510f4568f685f8b7b9ea830 # v1.9.0
     with:
       # Base64-encoded build script
       build_script: |
@@ -36,13 +36,13 @@ jobs:
       attestations: read
     steps:
       - name: "Download provenance"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: provenance
           path: provenance
 
       - name: "Verify with slsa-verifier"
-        uses: slsa-framework/slsa-verifier/action@v2.3.0
+        uses: slsa-framework/slsa-verifier/action@c9abffe4d2ab2ffa0b2ea9b2582b84164f390adc # v2.3.0
         with:
           provenance: provenance/*.intoto.jsonl
           source-uri: github.com/blistartunivers-afk/${{ github.event.repository.name }}

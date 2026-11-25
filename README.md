@@ -18,7 +18,7 @@ npm ci
 npm run dev
 ```
 
-El servidor local usa el puerto 8080. El sitio también puede inspeccionarse directamente desde `index.html`. El script de compilación del repositorio necesita ajustes antes de poder usarse de forma reproducible en CI.
+El servidor local usa el puerto 8080. Ejecuta `npm run build` para generar `dist/` y `npm run preview` para servir esa versión. El build usa el JavaScript existente en `motor/dream-loader.v2.js`; no necesita compilar TypeScript.
 
 ## Proyectos relacionados
 
