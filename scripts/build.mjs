@@ -1,6 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath } from 'url';
+import { execFileSync } from 'node:child_process';
 import { minify } from 'terser';
 import { minify as minifyHtml } from 'html-minifier-terser';
 import postcss from 'postcss';
@@ -13,10 +14,12 @@ const GALLERY = join(MOTOR, 'gallery');
 
 async function minifyJs(code) {
   const result = await minify(code, {
+    module: true,
     compress: { passes: 2, ecma: 2020 },
     mangle: { toplevel: true },
     format: { comments: false }
   });
+  execFileSync(process.execPath, ['--input-type=module', '--check'], {input: result.code});
   return result.code;
 }
 

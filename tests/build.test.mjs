@@ -18,6 +18,7 @@ test('build works outside the checkout and emits the motor module it imports', (
       assert.ok(!html.includes("register('/sw.js')"), 'missing service worker must not be registered');
     }
     assert.ok(existsSync(join(root, 'dist/motor/dream-loader.v2.js')));
+    execFileSync(process.execPath, ['--input-type=module', '--check'], {input: readFileSync(join(root, 'dist/motor/dream-loader.v2.js'), 'utf8')});
     assert.ok(existsSync(join(root, 'dist/motor/gallery/INDEX.txt')));
     const app = JSON.parse(readFileSync(join(root, 'dist/app.webmanifest'), 'utf8'));
     for (const icon of app.icons) {
