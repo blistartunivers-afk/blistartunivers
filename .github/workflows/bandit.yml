@@ -1,0 +1,23 @@
+name: "Security Lint (Bandit)"
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  bandit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Run Bandit
+        # Findings are advisory; installation and execution failures still fail CI.
+        run: |
+          python -m pip install bandit
+          bandit -r . -f json -o results.json --exit-zero
+          python scripts/check_bandit.py results.json
+      - name: Upload scan report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: bandit-report
+          path: results.json
+          if-no-files-found: error

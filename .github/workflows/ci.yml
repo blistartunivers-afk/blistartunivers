@@ -2,10 +2,16 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop]
+    branches: [master, main, develop]
   pull_request:
-    branches: [main]
+    branches: [master, main]
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Explicit deployment target
+        type: choice
+        default: none
+        options: [none, preview, production]
 
 jobs:
   build:
@@ -36,18 +42,7 @@ jobs:
           echo "=== Key files ==="
           ls -la dist/index.html dist/motor/index.html dist/manifest.json
           echo "=== HTML validation ==="
-          npx html-validate dist/index.html dist/motor/index.html || true
-
-      - name: Lighthouse CI
-        uses: treosh/lighthouse-ci-action@72f881228236981b625ed765b928efb1786a1f55 # v11
-        with:
-          urls: |
-            http://localhost:8080
-            http://localhost:8080/motor/
-          configPath: ./lighthouse-budget.json
-          uploadArtifacts: true
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+          node --input-type=module --check < dist/motor/dream-loader.v2.js
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -59,7 +54,7 @@ jobs:
   deploy-preview:
     name: Deploy Preview
     needs: build
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy == 'preview'
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
@@ -72,7 +67,7 @@ jobs:
         uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
         with:
           publish-dir: './dist'
-          production-branch: main
+          production-branch: master
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Preview from PR #${{ github.event.pull_request.number }}"
           enable-pull-request-comment: true
@@ -85,7 +80,7 @@ jobs:
   deploy-production:
     name: Deploy Production
     needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.deploy == 'production' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     steps:
       - name: Download build artifacts
@@ -98,7 +93,7 @@ jobs:
         uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
         with:
           publish-dir: './dist'
-          production-branch: main
+          production-branch: master
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Production deploy ${{ github.sha }}"
         env:

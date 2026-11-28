@@ -27,12 +27,12 @@ jobs:
       id-token: write
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
         with:
           persist-credentials: false
 
       - name: "Run Scorecard"
-        uses: ossf/scorecard-action@55891bbd73f2425e97637d96e306fc9d491d0b21 # v2.4.4
+        uses: ossf/scorecard-action@55891bbd73f2425e97637d96e306fc9d491d0b21  # v2.4.4
         with:
           results_file: results.sarif
           results_format: sarif
@@ -48,18 +48,10 @@ jobs:
 
       - name: "Upload SARIF results to GitHub Security tab"
         if: ${{ !github.event.repository.private }}
-        uses: github/codeql-action/upload-sarif@74c1aea9df7c0f02e9b7bfe4a8935abf2e5e3aa6 # v3.39.5
+        uses: github/codeql-action/upload-sarif@3ea06614dafe36dec890db3446326e0d40ce53d4  # v3.38.1
         with:
           sarif_file: results.sarif
           category: scorecard
 
-      - name: "Fail on critical findings"
-        if: always()
-        run: |
-          if [ -f results.sarif ]; then
-            CRITICAL=$(jq '[.runs[]?.results[]? | select(.level == "error")] | length' results.sarif)
-            if [ "$CRITICAL" -gt 0 ]; then
-              echo "::error::Scorecard found $CRITICAL critical findings"
-              exit 1
-            fi
-          fi
+      - name: Fail on SARIF error findings
+        run: python3 scripts/check_sarif.py results.sarif
