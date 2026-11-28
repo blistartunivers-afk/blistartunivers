@@ -38,8 +38,11 @@ test('installation caches the shell under the GitHub Pages project path', async 
   let pending;
   h.listeners.install({waitUntil: promise => { pending = promise; }});
   await pending;
-  assert.ok(h.loaded.includes('https://example.test/blistartunivers/'));
-  assert.ok(h.loaded.every(url => url.startsWith('https://example.test/blistartunivers/')));
+  assert.ok(h.loaded.some(value => value === 'https://example.test/blistartunivers/'));
+  assert.ok(h.loaded.every(value => {
+    const url = new URL(value);
+    return url.origin === 'https://example.test' && url.pathname.startsWith('/blistartunivers/');
+  }));
 });
 
 test('activation preserves caches belonging to other sites on the same origin', async () => {

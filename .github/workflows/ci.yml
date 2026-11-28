@@ -13,6 +13,9 @@ on:
         default: none
         options: [none, preview, production]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     name: Build & Test

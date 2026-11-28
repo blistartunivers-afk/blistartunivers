@@ -12,14 +12,18 @@ const DIST = join(ROOT, 'dist');
 const MOTOR = join(ROOT, 'motor');
 const GALLERY = join(MOTOR, 'gallery');
 
-async function minifyJs(code) {
+async function minifyJs(code, module = false) {
   const result = await minify(code, {
-    module: true,
+    module,
     compress: { passes: 2, ecma: 2020 },
-    mangle: { toplevel: true },
+    mangle: { toplevel: module },
     format: { comments: false }
   });
-  execFileSync(process.execPath, ['--input-type=module', '--check'], {input: result.code});
+  if (module) {
+    execFileSync(process.execPath, ['--input-type=module', '--check'], {input: result.code});
+  } else {
+    execFileSync(process.execPath, ['-e', "new (require('node:vm').Script)(require('node:fs').readFileSync(0, 'utf8'))"], {input: result.code});
+  }
   return result.code;
 }
 
@@ -133,7 +137,7 @@ async function build() {
   
   console.log('  Minificando dream-loader.v2.js...');
   const loaderJs = readFileSync(join(MOTOR, 'dream-loader.v2.js'), 'utf-8');
-  const minifiedLoader = await minifyJs(loaderJs);
+  const minifiedLoader = await minifyJs(loaderJs, true);
   writeFileSync(join(DIST, 'motor', 'dream-loader.v2.js'), minifiedLoader);
   
   console.log('  Copiando galeria...');
