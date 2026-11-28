@@ -1,22 +1,29 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync, rmSync } from 'fs';
 import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { execFileSync } from 'node:child_process';
 import { minify } from 'terser';
 import { minify as minifyHtml } from 'html-minifier-terser';
 import postcss from 'postcss';
 import cssnano from 'cssnano';
-import { execSync } from 'child_process';
 
-const ROOT = '/data/data/com.termux/files/home/blistartunivers';
+const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const DIST = join(ROOT, 'dist');
 const MOTOR = join(ROOT, 'motor');
 const GALLERY = join(MOTOR, 'gallery');
 
-async function minifyJs(code) {
+async function minifyJs(code, module = false) {
   const result = await minify(code, {
+    module,
     compress: { passes: 2, ecma: 2020 },
-    mangle: { toplevel: true },
+    mangle: { toplevel: module },
     format: { comments: false }
   });
+  if (module) {
+    execFileSync(process.execPath, ['--input-type=module', '--check'], {input: result.code});
+  } else {
+    execFileSync(process.execPath, ['-e', "new (require('node:vm').Script)(require('node:fs').readFileSync(0, 'utf8'))"], {input: result.code});
+  }
   return result.code;
 }
 
@@ -59,17 +66,6 @@ function hashFile(content) {
     hash |= 0;
   }
   return Math.abs(hash).toString(36).substring(0, 8);
-}
-
-async function compileTypeScript() {
-  console.log('  Compilando TypeScript...');
-  try {
-    execSync('npx tsc --project tsconfig.json', { cwd: ROOT, stdio: 'inherit' });
-    console.log('  ✓ TypeScript compilado');
-  } catch (e) {
-    console.error('  ✗ Error compilando TypeScript:', e.message);
-    throw e;
-  }
 }
 
 async function processMotorHtml(html) {
@@ -120,17 +116,8 @@ async function build() {
   mkdirSync(join(DIST, 'motor'), { recursive: true });
   mkdirSync(join(DIST, 'motor', 'gallery'), { recursive: true });
   
-  // 1. Compilar TypeScript primero
-  await compileTypeScript();
-  
-  const swRegistration = `<script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').then(r=>console.log('[SW] Registered:',r.scope)).catch(e=>console.warn('[SW] Registration failed:',e))}</script>`;
-  
   console.log('  Minificando index.html (root)...');
   await minifyHtmlFile(join(ROOT, 'index.html'), join(DIST, 'index.html'));
-  
-  let rootHtml = readFileSync(join(DIST, 'index.html'), 'utf-8');
-  rootHtml = rootHtml.replace('</body>', swRegistration + '</body>');
-  writeFileSync(join(DIST, 'index.html'), rootHtml);
   
   console.log('  Procesando motor/index.html...');
   const motorHtml = readFileSync(join(MOTOR, 'index.html'), 'utf-8');
@@ -146,18 +133,12 @@ async function build() {
     keepClosingSlash: true
   });
   
-  const finalMotorHtmlWithSw = finalMotorHtml.replace('</body>', swRegistration + '</body>');
-  writeFileSync(join(DIST, 'motor', 'index.html'), finalMotorHtmlWithSw);
+  writeFileSync(join(DIST, 'motor', 'index.html'), finalMotorHtml);
   
-  console.log('  Minificando dream-loader.v2.js (compilado)...');
+  console.log('  Minificando dream-loader.v2.js...');
   const loaderJs = readFileSync(join(MOTOR, 'dream-loader.v2.js'), 'utf-8');
-  const minifiedLoader = await minifyJs(loaderJs);
+  const minifiedLoader = await minifyJs(loaderJs, true);
   writeFileSync(join(DIST, 'motor', 'dream-loader.v2.js'), minifiedLoader);
-  
-  console.log('  Minificando cppn-engine.js (compilado)...');
-  const engineJs = readFileSync(join(MOTOR, 'cppn-engine.js'), 'utf-8');
-  const minifiedEngine = await minifyJs(engineJs);
-  writeFileSync(join(DIST, 'motor', 'cppn-engine.js'), minifiedEngine);
   
   console.log('  Copiando galeria...');
   copyDir(GALLERY, join(DIST, 'motor', 'gallery'));
@@ -171,6 +152,10 @@ async function build() {
   if (existsSync(join(ROOT, 'assets'))) {
     copyDir(join(ROOT, 'assets'), join(DIST, 'assets'));
   }
+
+  for (const file of ['app.webmanifest', 'register-sw.js', 'sw.js', 'robots.txt']) {
+    writeFileSync(join(DIST, file), readFileSync(join(ROOT, file)));
+  }
   
   const manifest = {
     version: '11.0.0',
@@ -179,7 +164,6 @@ async function build() {
       'index.html': hashFile(readFileSync(join(DIST, 'index.html'), 'utf-8')),
       'motor/index.html': hashFile(readFileSync(join(DIST, 'motor', 'index.html'), 'utf-8')),
       'motor/dream-loader.v2.js': hashFile(readFileSync(join(DIST, 'motor', 'dream-loader.v2.js'), 'utf-8')),
-      'motor/cppn-engine.js': hashFile(readFileSync(join(DIST, 'motor', 'cppn-engine.js'), 'utf-8')),
     }
   };
   writeFileSync(join(DIST, 'manifest.json'), JSON.stringify(manifest, null, 2));

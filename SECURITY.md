@@ -117,3 +117,5 @@ If a breach is suspected:
 ---
 
 *This policy applies to all repositories under the `blistartunivers-afk` organization and personal forks used for BLIST development.*
+
+Private channel when enabled: [GitHub Security Advisories](https://github.com/blistartunivers-afk/blistartunivers/security/advisories/new).

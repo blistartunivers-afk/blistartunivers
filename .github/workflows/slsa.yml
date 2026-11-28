@@ -1,48 +1,55 @@
-# SLSA (Supply-chain Levels for Software Artifacts) verification
-# Generates provenance for releases
-name: "SLSA Provenance"
+# Provenance covers the source archive only, not an APK or compiled product.
+name: Source archive provenance
 on:
   release:
     types: [published]
   workflow_dispatch:
 permissions:
   contents: read
-  id-token: write
-  attestations: write
 jobs:
-  build:
-    name: Build and generate provenance
-    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v1.9.0
-    with:
-      # Base64-encoded build script
-      build_script: |
-        echo "Building BLIST project..."
-        # Add your build steps here
-        # npm ci && npm run build
-      # Artifacts to upload
-      artifacts: dist/**
-    secrets:
-      # Required for provenance signing
-      registry-username: ${{ secrets.REGISTRY_USERNAME }}
-      registry-password: ${{ secrets.REGISTRY_PASSWORD }}
-
-  verify:
-    name: Verify provenance
-    needs: build
+  source:
     runs-on: ubuntu-latest
+    outputs:
+      subjects: ${{ steps.hash.outputs.subjects }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - id: hash
+        run: |
+          git archive --format=tar.gz --output=source.tar.gz HEAD
+          echo "subjects=$(sha256sum source.tar.gz | base64 -w0)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-archive
+          path: source.tar.gz
+          if-no-files-found: error
+      - if: ${{ github.event.repository.private }}
+        run: echo "Private source archived. Public transparency signing is intentionally not enabled." >> "$GITHUB_STEP_SUMMARY"
+  provenance:
+    needs: source
+    if: ${{ !github.event.repository.private }}
     permissions:
       contents: read
+      actions: read
       id-token: write
-      attestations: read
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: ${{ needs.source.outputs.subjects }}
+      provenance-name: source.intoto.jsonl
+  verify:
+    needs: [source, provenance]
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
     steps:
-      - name: "Download provenance"
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          name: provenance
-          path: provenance
-
-      - name: "Verify with slsa-verifier"
-        uses: slsa-framework/slsa-verifier/action@v2.3.0
+          name: source-archive
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          provenance: provenance/*.intoto.jsonl
-          source-uri: github.com/blistartunivers-afk/${{ github.event.repository.name }}
+          name: ${{ needs.provenance.outputs.provenance-name }}
+      - uses: slsa-framework/slsa-verifier/actions/installer@ea584f4502babc6f60d9bc799dbbb13c1caa9ee6 # v2.7.1
+      - name: Verify source artifact identity and digest
+        env:
+          SOURCE_REPOSITORY: ${{ github.repository }}
+        run: slsa-verifier verify-artifact source.tar.gz --provenance-path source.intoto.jsonl --source-uri "github.com/$SOURCE_REPOSITORY"

@@ -9,47 +9,47 @@ on:
     paths:
       - '.github/workflows/**'
   pull_request:
-    paths:
-      - '.github/workflows/**'
 permissions:
   contents: read
-  security-events: write
-  id-token: write
 jobs:
   scorecard:
     name: Scorecard
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      actions: read
+      checks: read
+      issues: read
+      pull-requests: read
       security-events: write
       id-token: write
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4.4.0
         with:
           persist-credentials: false
 
       - name: "Run Scorecard"
-        uses: ossf/scorecard-action@v2.3.1
+        uses: ossf/scorecard-action@55891bbd73f2425e97637d96e306fc9d491d0b21  # v2.4.4
         with:
           results_file: results.sarif
           results_format: sarif
-          publish_results: true
+          publish_results: ${{ !github.event.repository.private && github.event_name != 'pull_request' }}
           repo_token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Preserve Scorecard report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: scorecard-report
+          path: results.sarif
+          if-no-files-found: error
+
       - name: "Upload SARIF results to GitHub Security tab"
-        uses: github/codeql-action/upload-sarif@v3
+        if: ${{ !github.event.repository.private }}
+        uses: github/codeql-action/upload-sarif@3ea06614dafe36dec890db3446326e0d40ce53d4  # v3.38.1
         with:
           sarif_file: results.sarif
           category: scorecard
 
-      - name: "Fail on critical findings"
-        if: always()
-        run: |
-          if [ -f results.sarif ]; then
-            CRITICAL=$(jq '.runs[0].results[] | select(.level == "error") | length' results.sarif 2>/dev/null || echo 0)
-            if [ "$CRITICAL" -gt 0 ]; then
-              echo "::error::Scorecard found $CRITICAL critical findings"
-              exit 1
-            fi
-          fi
+      - name: Fail on SARIF error findings
+        run: python3 scripts/check_sarif.py results.sarif

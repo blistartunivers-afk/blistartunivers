@@ -1,0 +1,5 @@
+version: 3
+# The SLSA builder verifies its version-tag identity. No broad mutable-reference exception.
+ignore_actions:
+  - name: slsa-framework/slsa-github-generator/\.github/workflows/generator_generic_slsa3\.yml
+    ref: ^v2\.1\.0$
